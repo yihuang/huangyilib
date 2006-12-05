@@ -1,0 +1,20 @@
+allegra_rpc
+------------
+a rpc (remote procedure call) implementation using allegra.
+
+yield_stacklesspython.py
+---------------------------
+implement some interfaces of stacklesspython with enhanced yield statement in python2.5
+
+file_upload_monitor.py
+-----------------------
+a ajax file upload monitor using paste.
+
+action_pattern.py
+--------------------
+implement an intersting action pattern
+
+yupoo_api_wrapper.py
+----------------------
+utils to help using yopoo api
+
