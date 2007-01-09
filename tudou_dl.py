@@ -6,7 +6,7 @@ info_url = 'http://www.tudou.com/player/i.php'
 standard_url_tmp = 'http://www.tudou.com/programs/view/%s/'
 querystring_tmp = 'id=%s&retry=%s'
 iid_re = re.compile('var iid=(\d+)', re.M)
-input_url_re = re.compile(r'(?:http://)?(?:www\d*\.)?tudou\.com/programs/view/(\w+)/?')
+input_url_re = re.compile(r'(?:http://)?(?:www\.)?tudou\.com/programs/view/(\w+)/?')
 
 # get the input url
 if len(sys.argv)<2 or sys.argv[1] in ['-h', '--help']:
@@ -28,12 +28,12 @@ page = urllib2.urlopen(url).read()
 print 'analoging current page...'
 match = iid_re.search(page)
 if not match:
-    print 'can\'t find the iid'
+    print 'can\'t find the iid in this page'
     sys.exit(1)
 iid = match.group(1)
-print 'the iid', iid, 'is found'
 
 # construct the querystring, and post to info_url
 querystring = querystring_tmp % (iid, 0)
+print 'fetching the infos...'
 real_url = urllib2.urlopen(info_url, querystring).read()
 print 'the real video url is', real_url
