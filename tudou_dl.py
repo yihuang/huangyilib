@@ -6,7 +6,7 @@ info_url = 'http://www.tudou.com/player/i.php'
 standard_url_tmp = 'http://www.tudou.com/programs/view/%s/'
 querystring_tmp = 'id=%s&retry=%s'
 iid_re = re.compile('var iid=(\d+)', re.M)
-input_url_re = re.compile(r'(?:http://)?(?:www\.)?tudou\.com/programs/view/(\w+)/?')
+input_url_re = re.compile(r'(?:http://)?(?:www\.)?tudou\.com/programs/view/([^/]+)/?')
 
 # get the input url
 if len(sys.argv)<2 or sys.argv[1] in ['-h', '--help']:
