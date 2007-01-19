@@ -4,7 +4,8 @@ class TypecheckError(Exception):pass
 def typecheck(*types, **kwtypes):
 
     def type_checker(func):
-        all_args = func.func_code.co_varnames
+        'the decorator'
+        all_args = func.func_code.co_varnames # all the argument names
         
         # check the type definition
         n_types = len(types)
@@ -17,11 +18,11 @@ def typecheck(*types, **kwtypes):
                     '%s() has not this keyword argument %r'%\
                             (func.__name__, k)
 
-        pos_args = all_args[:-len(func.func_defaults)]
-        typecheck_map = dict( zip(pos_args[:len(types)], types) )
+        pos_args = all_args[:-len(func.func_defaults)] # position argument names
+        typecheck_map = dict( zip(pos_args[:len(types)], types) ) # map: argument name => type
         typecheck_map.update(kwtypes)
 
-        # check the default argument
+        # check the default argument's type
         defaults = zip( all_args[-len(func.func_defaults):], func.func_defaults )
         for k,v in defaults:
             t = typecheck_map.get(k)
@@ -31,18 +32,22 @@ def typecheck(*types, **kwtypes):
                         (v, k, t)
 
         def new_func(*args, **kw):
+            'the wrapper function'
             check(args, kw)
             func(*args, **kw)
 
         def check(args, kw):
-            flag_map = {}
+            'do the type checking'
+            flag_map = {} # record if a argument has been bound.
+            # check the input position arguments
             for name, value in zip(all_args[:len(args)], args):
                 t = typecheck_map.get(name)
                 if t:
                     if not isinstance(value, t):
                         raise TypecheckError, 'the value %r of argument %r is not type %r' % \
                                 (value, name, typecheck_map[name])
-                    flag_map[name] = True # 标记该参数已经传递
+                    flag_map[name] = True # this name has been bound.
+            # check the input keyword arguments
             for k,v in kw.items():
                 if flag_map.get(k):
                     raise TypeError, '%s() got multiple values for keyword argument %r'%\
