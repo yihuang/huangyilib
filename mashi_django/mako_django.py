@@ -1,13 +1,33 @@
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist
 from django.template.context import Context
-from django.template.loaders.app_directories import app_template_dirs
 from mako.lookup import TemplateLookup
 from mako.template import Template
 from mako.exceptions import TopLevelLookupException
+import os
 
-template_dirs = settings.TEMPLATE_DIRS + app_template_dirs
+app_template_dirs = []
+for app in settings.INSTALLED_APPS:
+    i = app.rfind('.')
+    if i == -1:
+        m, a = app, None
+    else:
+        m, a = app[:i], app[i+1:]
+    try:
+        if a is None:
+            mod = __import__(m, {}, {}, [])
+        else:
+            mod = getattr(__import__(m, {}, {}, [a]), a)
+    except ImportError, e:
+        raise ImproperlyConfigured, 'ImportError %s: %s' % (app, e.args[0])
+    template_dir = os.path.normpath(
+            os.path.join(os.path.dirname(mod.__file__), 'mako_templates'))
+    if os.path.isdir(template_dir):
+        app_template_dirs.append(template_dir)
+
+template_dirs = settings.MAKO_TEMPLATE_DIRS + tuple(app_template_dirs)
 lookup = TemplateLookup(directories=template_dirs,
             module_directory='templates')
 
