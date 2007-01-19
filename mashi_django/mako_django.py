@@ -27,9 +27,11 @@ for app in settings.INSTALLED_APPS:
     if os.path.isdir(template_dir):
         app_template_dirs.append(template_dir)
 
-template_dirs = settings.MAKO_TEMPLATE_DIRS + tuple(app_template_dirs)
+template_dirs = getattr(settings, 'MAKO_TEMPLATE_DIRS', None) or ('mako_templates',)
+template_dirs += tuple(app_template_dirs)
+module_dir = getattr(settings, 'MAKO_MODULE_DIR', None) or 'mako_modules'
 lookup = TemplateLookup(directories=template_dirs,
-            module_directory='templates')
+            module_directory=module_dir)
 
 def select_template(template_name_list):
     for template_name in template_name_list:
