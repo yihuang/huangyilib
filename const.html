@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>c:\const.py.html</title>
+<meta name="Generator" content="Vim/7.0">
+<meta http-equiv="content-type" content="text/html; charset=GBK">
+</head>
+<body bgcolor="#000000" text="#cccccc">
+<pre>
+<font color="#80a0ff"># -*- coding: utf-8 -*-</font>
+<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">感觉楼主的这篇和上次用 python 实现 define 的那篇帖子，想说的都是</font>
+<font color="#ffa0a0">一个东西，就是静态语言中的 const，第一次初始化后不能修改的东西。</font>
+
+<font color="#ffa0a0">说起来，python 对象中其实是有这样的东西，就是 imutable object 。</font>
+<font color="#ffa0a0">不过常量针对的是名字而非对象，所以在 python 中常量的准确定义应该</font>
+<font color="#ffa0a0">是：在第一次绑定后不能重新绑定其他对象的名字。</font>
+
+<font color="#ffa0a0">遗憾的是 python 中没有这样的东西。</font>
+
+<font color="#ffa0a0">其实和类型检查、访问控制等东西一样，静态语言中常量是通过编译器在</font>
+<font color="#ffa0a0">编译时进行检查，而 python 就算实现那也只能是在运行时进行计算，势</font>
+<font color="#ffa0a0">必损耗性能，我想这也是 python 中没有这样的东西的原因。</font>
+
+<font color="#ffa0a0">但是正如 python 中的访问控制是通过对名字的约定来做的一样，其实常</font>
+<font color="#ffa0a0">量也比较适合这样做。</font>
+
+<font color="#ffa0a0">如果实在要用动态语言模拟 const，那么关键在于对名字的绑定进行控制。</font>
+<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+
+<span style="background-color: #808080"><font color="#00ffff">   7 lines: def a_const_value():---------------------------------------------------------------------------------------------</font></span>
+
+<span style="background-color: #808080"><font color="#00ffff">  14 lines: class Temp(object):----------------------------------------------------------------------------------------------</font></span>
+
+<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">不过这种方式中总是可以通过访问 consts.__dict__ 或是 t.__consts__ 直接存取常量名字。所以终究还是得靠约定。</font>
+<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+
+<span style="background-color: #808080"><font color="#00ffff">   2 lines: class ConstError(Exception): pass--------------------------------------------------------------------------------</font></span>
+
+<span style="background-color: #808080"><font color="#00ffff">  23 lines: class Consts(object):--------------------------------------------------------------------------------------------</font></span>
+
+<span style="background-color: #808080"><font color="#00ffff">  45 lines: class ConstBase(object):-----------------------------------------------------------------------------------------</font></span>
+
+<font color="#ffff00">if</font> __name__ == <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">__main__</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>:
+    <font color="#ff80ff">import</font> doctest
+    doctest.testmod()
+</pre>
+</body>
+</html>
