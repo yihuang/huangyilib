@@ -17,11 +17,15 @@
 量也比较适合这样做。
 
 如果实在要用动态语言模拟 const，那么关键在于对名字的绑定进行控制。
+
+下面总结一下各种做法：
 '''
 
 def a_const_value():
     '''
-    方法1是通过函数替代对名字的直接访问
+    方法1是通过使用函数替代对名字的直接访问，好像是比较傻的方法。
+    不过 ruby 中函数调用可以省略括号就有点像了
+
     >>> a_const_value()
     'const'
     '''
@@ -29,7 +33,8 @@ def a_const_value():
 
 class Temp(object):
     '''
-    class 中通过 property 可以做得更优雅：
+    class 中通过 property 可以做得更漂亮：
+
     >>> t = Temp()
     >>> t.a_const_value
     'const'
@@ -42,16 +47,12 @@ class Temp(object):
     def a_const_value(self):
         return 'const'
 
-'''
-不过这种方式中总是可以通过访问 consts.__dict__ 或是 t.__consts__ 直接存取常量名字。所以终究还是得靠约定。
-'''
-
 class ConstError(Exception):
     pass
 
 class Consts(object):
     '''
-    方法2可以将常量名字放入一个 class 中统一进行管理：
+    方法2是将常量名字放入一个 class 中统一进行管理：
 
     >>> consts = Consts()
     >>> consts.a = 2

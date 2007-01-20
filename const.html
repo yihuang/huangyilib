@@ -25,21 +25,108 @@
 <font color="#ffa0a0">量也比较适合这样做。</font>
 
 <font color="#ffa0a0">如果实在要用动态语言模拟 const，那么关键在于对名字的绑定进行控制。</font>
+
+<font color="#ffa0a0">下面总结一下各种做法：</font>
 <span style="background-color: #000000"><font color="#cccccc">'''</font></span>
 
-<span style="background-color: #808080"><font color="#00ffff">   7 lines: def a_const_value():---------------------------------------------------------------------------------------------</font></span>
+<font color="#ffff00">def</font> <font color="#40ffff">a_const_value</font>():
+    <span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">    方法1是通过使用函数替代对名字的直接访问，好像是比较傻的方法。</font>
+<font color="#ffa0a0">    不过 ruby 中函数调用可以省略括号就有点像了</font>
 
-<span style="background-color: #808080"><font color="#00ffff">  14 lines: class Temp(object):----------------------------------------------------------------------------------------------</font></span>
+<font color="#ffa0a0">    &gt;&gt;&gt; a_const_value()</font>
+<font color="#ffa0a0">    'const'</font>
+<font color="#ffa0a0">    </font><span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+    <font color="#ffff00">return</font> <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">const</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>
 
-<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
-<font color="#ffa0a0">不过这种方式中总是可以通过访问 consts.__dict__ 或是 t.__consts__ 直接存取常量名字。所以终究还是得靠约定。</font>
-<span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffff00">class</font> <font color="#40ffff">Temp</font>(object):
+    <span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">    class 中通过 property 可以做得更漂亮：</font>
 
-<span style="background-color: #808080"><font color="#00ffff">   2 lines: class ConstError(Exception): pass--------------------------------------------------------------------------------</font></span>
+<font color="#ffa0a0">    &gt;&gt;&gt; t = Temp()</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.a_const_value</font>
+<font color="#ffa0a0">    'const'</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.a_const_value = 'another value'</font>
+<font color="#ffa0a0">    Traceback (most recent call last):</font>
+<font color="#ffa0a0">        ...</font>
+<font color="#ffa0a0">    AttributeError: can't set attribute</font>
+<font color="#ffa0a0">    </font><span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+    <font color="#ff80ff">@</font><font color="#40ffff">property</font>
+    <font color="#ffff00">def</font> <font color="#40ffff">a_const_value</font>(self):
+        <font color="#ffff00">return</font> <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">const</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>
 
-<span style="background-color: #808080"><font color="#00ffff">  23 lines: class Consts(object):--------------------------------------------------------------------------------------------</font></span>
+<font color="#ffff00">class</font> <font color="#40ffff">ConstError</font>(Exception):
+    <font color="#ffff00">pass</font>
 
-<span style="background-color: #808080"><font color="#00ffff">  45 lines: class ConstBase(object):-----------------------------------------------------------------------------------------</font></span>
+<font color="#ffff00">class</font> <font color="#40ffff">Consts</font>(object):
+    <span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">    方法2是将常量名字放入一个 class 中统一进行管理：</font>
+
+<font color="#ffa0a0">    &gt;&gt;&gt; consts = Consts()</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; consts.a = 2</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; consts.a</font>
+<font color="#ffa0a0">    2</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; consts.a = 3</font>
+<font color="#ffa0a0">    Traceback (most recent call last):</font>
+<font color="#ffa0a0">        ...</font>
+<font color="#ffa0a0">    ConstError: can't rebind const name</font>
+
+<font color="#ffa0a0">    不过需要注意的是，仍然可以通过 __dict__ 直接访问常量：</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; consts.__dict__['a'] = 3</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; consts.a</font>
+<font color="#ffa0a0">    3</font>
+<font color="#ffa0a0">    </font><span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+    <font color="#ffff00">def</font> <font color="#40ffff">__setattr__</font>(self, name, value):
+        <font color="#ffff00">if</font> name <font color="#ffff00">in</font> self.__dict__:
+            <font color="#ffff00">raise</font> ConstError, <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">can</font><font color="#ffa500">\'</font><font color="#ffa0a0">t rebind const name</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>
+        <font color="#ffff00">else</font>:
+            self.__dict__[name] = value
+
+<font color="#ffff00">class</font> <font color="#40ffff">ConstBase</font>(object):
+    <span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+<font color="#ffa0a0">    或者让 class 自己指定那些是常量：</font>
+
+<font color="#ffa0a0">    &gt;&gt;&gt; class Temp(ConstBase):</font>
+<font color="#ffa0a0">    ...     __consts__ = {'a':None, 'b':2}</font>
+<font color="#ffa0a0">    ...     def __init__(self, a):</font>
+<font color="#ffa0a0">    ...         self.a = a</font>
+<font color="#ffa0a0">    ...</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t = Temp(2)</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.a</font>
+<font color="#ffa0a0">    2</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.b</font>
+<font color="#ffa0a0">    2</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.a = 3</font>
+<font color="#ffa0a0">    Traceback (most recent call last):</font>
+<font color="#ffa0a0">        ...</font>
+<font color="#ffa0a0">    ConstError: can't rebind const name</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.b = 3</font>
+<font color="#ffa0a0">    Traceback (most recent call last):</font>
+<font color="#ffa0a0">        ...</font>
+<font color="#ffa0a0">    ConstError: can't rebind const name</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.c = 5</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.c</font>
+<font color="#ffa0a0">    5</font>
+
+<font color="#ffa0a0">    使用这种方式，也可以直接通过 __dict__ 对常量进行修改：</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.__dict__['a']= 3</font>
+<font color="#ffa0a0">    &gt;&gt;&gt; t.a</font>
+<font color="#ffa0a0">    3</font>
+<font color="#ffa0a0">    </font><span style="background-color: #000000"><font color="#cccccc">'''</font></span>
+    __consts__ = {}
+    <font color="#ffff00">def</font> <font color="#40ffff">__setattr__</font>(self, name, value):
+        <font color="#ffff00">if</font> name <font color="#ffff00">in</font> self.__consts__:
+            <font color="#ffff00">if</font> self.__consts__[name] == None:
+                self.__consts__[name] = value
+            <font color="#ffff00">else</font>:
+                <font color="#ffff00">raise</font> ConstError, <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">can</font><font color="#ffa500">\'</font><font color="#ffa0a0">t rebind const name</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>
+        <font color="#ffff00">else</font>:
+            super(ConstBase, self).__setattr__(name, value)
+    <font color="#ffff00">def</font> <font color="#40ffff">__getattr__</font>(self, name):
+        <font color="#ffff00">if</font> name <font color="#ffff00">in</font> self.__consts__:
+            <font color="#ffff00">return</font> self.__consts__[name]
+        <font color="#ffff00">else</font>:
+            <font color="#ffff00">return</font> super(ConstBase, self).__getattr__(name, value)
 
 <font color="#ffff00">if</font> __name__ == <span style="background-color: #000000"><font color="#cccccc">'</font></span><font color="#ffa0a0">__main__</font><span style="background-color: #000000"><font color="#cccccc">'</font></span>:
     <font color="#ff80ff">import</font> doctest
