@@ -15,6 +15,7 @@ configurations:
     MAKO_TEMPLATE_DIRS:
         A tuple, specify the directories in which to find the mako templates, 
         just like TEMPLATE_DIRS .
+        default value is ('mako_templates',)
     MAKO_MODULE_DIR:
         A string, if specified, all of the compiled template module files will be
         stored in this directory.

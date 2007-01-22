@@ -12,6 +12,7 @@ from common import app_dirs
 configuration:
     GENSHI_TEMPLATE_DIRS:
         specify directories in which to find the genshi template files.
+        default value is ('genshi_templates',)
 '''
 
 app_template_dirs = []
