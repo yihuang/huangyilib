@@ -8,6 +8,22 @@ from mako.template import Template
 from mako.exceptions import TopLevelLookupException
 import os
 
+'''
+configurations:
+    MAKO_TEMPLATE_DIRS:
+        A tuple, specify the directories in which to find the mako templates, 
+        just like TEMPLATE_DIRS .
+    MAKO_MODULE_DIR:
+        A string, if specified, all of the compiled template module files will be
+        stored in this directory.
+    MAKO_MODULENAME_CALLABLE:
+        A callable, if MAKO_MODULE_DIR is not specified, this will be
+        used to determine the filename of compiled template module file.
+        See [http://www.makotemplates.org/trac/ticket/14]
+        Default to the function `default_module_name`, which
+        just appends '.py' to the template filename.
+'''
+
 app_template_dirs = []
 for app in settings.INSTALLED_APPS:
     i = app.rfind('.')
@@ -43,7 +59,7 @@ if module_dir:
     lookup = TemplateLookup(directories=template_dirs,
             module_directory=module_dir)
 else:
-    module_name_callable = getattr(settings, 'MAKO_MODULE_NAME_CALLABLE', None)
+    module_name_callable = getattr(settings, 'MAKO_MODULENAME_CALLABLE', None)
 
     if callable(module_name_callable):
         lookup = TemplateLookup(directories=template_dirs,
