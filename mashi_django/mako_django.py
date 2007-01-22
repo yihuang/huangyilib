@@ -8,6 +8,8 @@ from mako.template import Template
 from mako.exceptions import TopLevelLookupException
 import os
 
+from common import app_dirs
+
 '''
 configurations:
     MAKO_TEMPLATE_DIRS:
@@ -25,21 +27,8 @@ configurations:
 '''
 
 app_template_dirs = []
-for app in settings.INSTALLED_APPS:
-    i = app.rfind('.')
-    if i == -1:
-        m, a = app, None
-    else:
-        m, a = app[:i], app[i+1:]
-    try:
-        if a is None:
-            mod = __import__(m, {}, {}, [])
-        else:
-            mod = getattr(__import__(m, {}, {}, [a]), a)
-    except ImportError, e:
-        raise ImproperlyConfigured, 'ImportError %s: %s' % (app, e.args[0])
-    template_dir = os.path.normpath(
-            os.path.join(os.path.dirname(mod.__file__), 'mako_templates'))
+for app_dir in app_dirs:
+    template_dir = os.path.join(app_dir, 'mako_templates')
     if os.path.isdir(template_dir):
         app_template_dirs.append(template_dir)
 
@@ -75,13 +64,13 @@ def select_template(template_name_list):
         except TopLevelLookupException:
             pass
 
-    raise TemplateDoesNotExist, ', '.join(template_name_list)
+    raise TemplateDoesNotExist, 'mako templates: '+', '.join(template_name_list)
 
 def get_template(template_name):
     try:
         return lookup.get_template(template_name)
     except TopLevelLookupException:
-        raise TemplateDoesNotExist, template_name
+        raise TemplateDoesNotExist, 'mako templates: '+template_name
 
 def render_to_response(template_name, dictionary=None,
         context_instance=None):
