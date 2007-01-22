@@ -29,9 +29,28 @@ for app in settings.INSTALLED_APPS:
 
 template_dirs = getattr(settings, 'MAKO_TEMPLATE_DIRS', None) or ('mako_templates',)
 template_dirs += tuple(app_template_dirs)
-module_dir = getattr(settings, 'MAKO_MODULE_DIR', None) or 'mako_modules'
-lookup = TemplateLookup(directories=template_dirs,
+
+def default_module_name(filename, uri):
+    '''
+    Will store module files in the same directory as the corresponding template files.
+    detail about module_name_callable, go to 
+    http://www.makotemplates.org/trac/ticket/14
+    '''
+    return filename+'.py'
+
+module_dir = getattr(settings, 'MAKO_MODULE_DIR', None)
+if module_dir:
+    lookup = TemplateLookup(directories=template_dirs,
             module_directory=module_dir)
+else:
+    module_name_callable = getattr(settings, 'MAKO_MODULE_NAME_CALLABLE', None)
+
+    if callable(module_name_callable):
+        lookup = TemplateLookup(directories=template_dirs,
+                modulename_callable=module_name_callable)
+    else:
+        lookup = TemplateLookup(directories=template_dirs,
+                modulename_callable=default_module_name)
 
 def select_template(template_name_list):
     for template_name in template_name_list:
