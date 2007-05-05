@@ -7,7 +7,7 @@ http://www.stackless.com/
 
 debuglevel = 0
 
-readys = deque() # 就绪队列
+readys = deque() # ready tasks [(tasklet, obj), ...]
 
 class command(object):
     def __init__(self, func, *args, **kw):
@@ -21,11 +21,12 @@ class command(object):
 class channel(object):
     ''' http://www.stackless.com/wiki/Channels '''
     def __init__(self):
-        self.senders = deque() # 发送队列 元素：(tasklet, obj)
-        self.receivers = deque() # 接收队列 元素：tasklet
+        self.senders = deque() # sending tasks [(tasklet, obj), ...]
+        self.receivers = deque() # receive tasks [tasklet, ...]
 
     def send(self, sender, obj):
-        '''向channel中发送数据，如果没用接受者，则让该tasklet等待'''
+        '''send data to the channel，if there is no receiver，then block
+        the sender tasklet'''
         if debuglevel:
             print 'tasklet:',sender,'send data:',obj,';receivers:',len(self.receivers)
         if self.receivers:
@@ -36,7 +37,8 @@ class channel(object):
             self.senders.append( (sender, obj) )
 
     def receive(self, receiver):
-        ''' 从channel中接收数据，如果没用发送者，则让该tasklet等待'''
+        ''' receive data from channel，if there is no sender，then
+        block the receiver tasklet'''
         if debuglevel:
             print 'tasklet:',receiver,'receive data ;senders:',len(self.senders)
         if self.senders:
@@ -52,29 +54,30 @@ class tasklet(object):
         self.func = func
 
     def __call__(self, *arg, **kw):
-        '''将 genarator 加到就绪队列'''
+        '''add the genarator to the readys queue'''
         ready(self.func(*arg, **kw), None)
 
 def run(task, obj):
-    ''' 执行task '''
+    ''' run the task '''
     try:
         result = task.send(obj)
     except StopIteration:
         pass
     else:
         if isinstance(result, command):
-            # 给tasklet以执行 "系统命令" 的机会
-            # 用户代码: yield command(func, ... )
+            # execute the "system call request" 
+            # tasklet can use: `yield command(func, ... )` to execute
+            # some command in main tasklet.
             result(task)
         else:
-            ready(task, None) # 加到就绪队列队尾，等待调度执行
+            ready(task, None) # append to readys queue，wait to be executed
 
 def ready(task, obj):
-    ''' 加入就绪队列 等待调度 '''
+    ''' append to readys, wait to be executed '''
     readys.append( (task, obj) )
 
 def schedule():
-    ''' 调度就绪队列中的 tasklet '''
+    ''' schedule the tasklets in readys '''
     while readys:
         task, obj = readys.popleft()
         run(task, obj)
