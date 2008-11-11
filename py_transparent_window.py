@@ -60,7 +60,7 @@ MUSIC
     '''
 
     layout.set_markup('''
-            <span font-desc="Sans">%s</span>
+            <span font-desc="Sans Bold">%s</span>
             ''' % lyric_texts)
     ctx.set_source_rgba (0,1,0,1)
     ctx.move_to(0,0)
