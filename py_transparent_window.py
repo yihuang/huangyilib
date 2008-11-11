@@ -43,21 +43,14 @@ def draw_window(win, event):
 
     lyric_texts = '''
 In the year of 2007
-
 the 17th National Congress of the communist party was held
-
 president hu described China's brand new future to the whole world
-
 Since then the chinese people's life began to change
-
 涛哥我爱你，我爱你，我爱你，都说你就是一个奇迹
-
 想帮你刷刷碗做做饭擦擦地
-
 大家都爱你
-
 MUSIC
-    '''
+'''
 
     layout.set_markup('''
             <span font-desc="Sans Bold">%s</span>
