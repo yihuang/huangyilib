@@ -7,7 +7,7 @@ import pango
 import pangocairo
 
 def draw_window(win, event):
-    win_width, win_height = win.get_size()
+   	win_width, win_height = win.get_size()
 
     ctx = win.window.cairo_create()
     ctx.set_operator(cairo.OPERATOR_SOURCE)
