@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<title>js 最佳实践</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 5196 2007-06-03 20:25:28Z wiemann $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left {
+  clear: left }
+
+img.align-right {
+  clear: right }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="js">
+<h1 class="title">js 最佳实践</h1>
+
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id1" id="id5">对象/命名空间</a></li>
+<li><a class="reference internal" href="#id2" id="id6">函数式编程风格</a></li>
+<li><a class="reference internal" href="#id3" id="id7">装饰器</a><ul>
+<li><a class="reference internal" href="#logger" id="id8">logger</a></li>
+<li><a class="reference internal" href="#cache" id="id9">cache</a></li>
+<li><a class="reference internal" href="#this" id="id10">绑定 this</a></li>
+<li><a class="reference internal" href="#id4" id="id11">还是跟this有关</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arguments" id="id12">增强arguments</a></li>
+</ul>
+</div>
+<p>如何封装业务逻辑。</p>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id5">对象/命名空间</a></h1>
+<p>对于js来说，对象就是一堆名字与值的映射，其实就是一个命名空间。</p>
+<p>先设计一个场景，按照最直接的写法如下的一段代码:</p>
+<pre class="literal-block">
+var status = 1;
+function change_status(){
+    if(status==1)
+        status = 2;
+    else
+        status = 1;
+}
+
+change_status();
+</pre>
+<p>实际上这样的代码并没有什么不好，简单直观，容易理解，当时代码量，业务逻辑复杂度上去后，
+在全局命名空间中积累越来越多的变量名字，容易发生名字冲突。</p>
+<p>解决这个问题就可以使用对象对不同的模块进行包装</p>
+<pre class="literal-block">
+var status = {
+    _status : 1,
+    change : function(){
+        if(this._status==1)
+            this._status = 2;
+        else
+            this._status = 1;
+    }
+}
+
+status.change();
+</pre>
+<p>在一些极端情况下，也会有人甚至会担心别人会“不小心”直接修改了 status._status 的值，虽然在一个正经的团队中，
+这种事情发生的可能性微乎其微。其实究竟动态语言是否真的需要强制性的私有变量是一个设计决策的问题，
+也引发过很多讨论，这里只是展示一下可能性。</p>
+<p>利用闭包实现私有成员</p>
+<pre class="literal-block">
+var status = (function(){
+    var private_status = 1;
+    return {
+        change:function(){
+            if(private_status==1)
+                private_status = 2;
+            else
+                private_status = 1;
+        }
+    }
+})()
+
+status.change();
+</pre>
+<p>上面实现的 status 对象都是单件。但也有一些逻辑，需要能够创建多个实例，重复使用。
+js本身即支持这样的做法：</p>
+<pre class="literal-block">
+var Status = function(init_status){
+    this._status = init_status;
+}
+Status.prototype.change(){
+    if(this._status==1)
+        this._status=2
+    else
+        this._status=1
+}
+
+var status1 = new Status(1);
+status1.change();
+var status2 = new Status(2);
+status1.change();
+</pre>
+<p>利用闭包实现私有变量：</p>
+<pre class="literal-block">
+var Status = function(init_status){
+    var private_status = init_status;
+    return {
+        change:function(){
+            if(private_status==1)
+                private_status = 2;
+            else
+                private_status = 1;
+        }
+    }
+}
+var status1 = Status(1);
+status1.change();
+var status2 = Status(2);
+status2.change();
+</pre>
+</div>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id6">函数式编程风格</a></h1>
+<p>js 是命令式与函数式混合的一门语言，从传统眼光来看，js的面向对象是很糟糕的，
+所以 js 的风格可能甚至更倾向于函数式一些。所以学会用函数式的方式来编写 js 很重要。</p>
+<p>当然函数式这个概念涵盖的东西很广，这里只是利用 js 高阶函数（通俗地说就是函数即对象）
+的特性提出一些方便编写js代码的范式。</p>
+<p>恰好 javascript1.6 规范中给 Array 增加的几个方法就是很好的范例。</p>
+<pre class="literal-block">
+// Array.forEach
+var content = [];
+[1,2,3,4,5,6,7].forEach(function(value, index, array){
+    content.push('&lt;li&gt;'+value+'&lt;/li&gt;');
+})
+document.getElementById('container').innerHTML = content.join('');
+
+// Array.filter
+[1,2,3,4,5,6,7].filter(function(value, index, array){
+    return value&gt;4;
+}); // 返回 [5,6,7]
+
+// Array.map
+[1,2,3,4,5,6,7].map(function(value, index, array){
+    return value * 2;
+}); // 返回 [2,4,6,8,10,12,14]
+
+var song_list = [
+    {id:1, name:'aaa'},
+    {id:2, name:'bbb'},
+    {id:3, name:'ccc'}
+];
+var content = song_list.filter(function(value){
+    // 只显示歌曲名长度小于5的
+    return value.name.length&lt;5;
+}).map(function(value, index, array){
+    return '&lt;li&gt;%(index). &lt;a href=&quot;#&quot; onclick=&quot;listen(%(song.id));return false;&quot;&gt;%(song.name)&lt;/a&gt;&lt;/li&gt;'.format({
+        index:index,
+        song:value
+    });
+});
+document.getElementById('container').innerHTML = content.join('');
+</pre>
+<p>Array.some
+Array.every</p>
+<p>TODO</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id7">装饰器</a></h1>
+<div class="section" id="logger">
+<h2><a class="toc-backref" href="#id8">logger</a></h2>
+<p>在进入函数和退出函数的时候输出日志</p>
+<pre class="literal-block">
+function logger(func)
+{
+    return function(){
+        console.log('enter function:'+func.name+' with arguments:'+Array.prototype.join.call(arguments, ','));
+        var result = func.apply(this, arguments);
+        console.log('function:'+func.name+' return '+result);
+    }
+}
+function test(a){
+    return new Date(a);
+}
+test = logger(test);
+test(1414234243);
+// 输出:
+// enter function:test with arguments:1414234243
+// function:test returns Sat Jan 17 1970 16:50:34 GMT+0800 (CST)
+</pre>
+<p>如果函数都放在命名空间里面，还可以一次性对所有函数启动这个调用跟踪器，在调试时开启，
+发布时关闭：</p>
+<pre class="literal-block">
+var comm = {
+    func1:function func1(){...},
+    func2:function func2(){...},
+    func3:function func3(){...},
+    func4:function func4(){...}
+}
+if(DEBUG){
+    for(var name in comm){
+        if(comm[name].constructor = Function){
+            comm[name] = logger(comm[name]);
+        }
+    }
+}
+</pre>
+<p>这样所有函数都会记录自己的调用的参数和返回值，方便调试。</p>
+</div>
+<div class="section" id="cache">
+<h2><a class="toc-backref" href="#id9">cache</a></h2>
+<p>对于一些需要大计算量的函数，比如需要构造一大块html，可以用函数的参数作为key对函数的结果进行缓存。在第二次用相同的参数调用时，就直接从缓存中取数据了。</p>
+<pre class="literal-block">
+function cache(func){
+    var _cache = {};
+    return function(){
+        // 如何对参数列表进行hash还值得商榷的
+        var key = Array.prototype.join.call(arguments);
+        if(key in _cache){
+            console.log('cache命中');
+            return _cache[key];
+        }
+        else{
+            var result = func.apply(this, arguments);
+            _cache[key] = result;
+            return result;
+        }
+    }
+}
+// how to use
+function render_song_list(song_list){
+    return song_list.map(function(value){
+        return '&lt;li&gt;'+value.name+'&lt;/li&gt;';
+    }).join('');
+}
+compute = cache(compute);
+song_list = [{name:'song1'}, {name:'song2'}];
+compute(song_list) // 返回 &lt;li&gt;song1&lt;/li&gt;&lt;li&gt;song2&lt;/li&gt;
+compute(song_list) // log: cache命中 返回: &lt;li&gt;song1&lt;/li&gt;&lt;li&gt;song2&lt;/li&gt;
+</pre>
+</div>
+<div class="section" id="this">
+<h2><a class="toc-backref" href="#id10">绑定 this</a></h2>
+<pre class="literal-block">
+Function.prototype.bind = function(owner)
+{
+    var func = this; // 原函数
+    return function(){
+        func.apply(owner, arguments);
+    }
+}
+
+var Obj = {
+    a:1
+}
+Obj.test = function(){
+    console.log(this.a);
+}
+</pre>
+<p>在这个时候，如果调用 Obj.test() 当然没有什么问题，但是如果把 Obj.test 当作
+事件处理函数或者ajax回调函数之类的话，this就不确定了，执行结果也很难预料，
+或者通过 apply 也可以修改其 this 指向的对象。
+这个时候可以通过 bind 固定 this：</p>
+<pre class="literal-block">
+Obj.test = Obj.test.bind(Obj); // 这样 Obj.test 就很像一个面向对象语言中的方法了。
+Obj.test.apply(null); // apply 不能改变 this
+some_element.onclick = Obj.test.bind(Obj); // 事件回调时也不会影响到函数中的 this
+</pre>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id11">还是跟this有关</a></h2>
+<pre class="literal-block">
+function AClass(a){
+    this.a = a;
+}
+var obj = new AClass('xxx');
+// 但有时会忘记写 new
+var obj = AClass('xxx');
+// 就出问题了，但由于js的动态特性，这个错误并不会立刻显现
+</pre>
+<p>如何及早捕捉这个问题呢，还是启用一个装饰器在函数的入口增加代码进行判断。</p>
+<pre class="literal-block">
+function class(func){
+    return function(){
+        if(!(this instanceof arguments.callee)){
+            console.log('error, please use new');
+            return null;
+        }
+        func.apply(this, arguments);
+    }
+}
+
+AClass = class(AClass); // 把 AClass 装饰一下
+var obj = AClass('xxx'); // 忘了写 new ，马上就会打出日志
+</pre>
+</div>
+</div>
+<div class="section" id="arguments">
+<h1><a class="toc-backref" href="#id12">增强arguments</a></h1>
+<p>在平时的js编程中发现，经常要处理 arguments，实际上 arguments 跟 Array 很像，
+但偏偏不带 Array 那些方法，所以常常要写这样的代码：</p>
+<pre class="literal-block">
+Array.prototype.join(arguments, ',');
+</pre>
+<p>不如一次性把 Array 的方法都加到 arguments 的原型里面去。</p>
+<pre class="literal-block">
+(function temp(){
+    arguments.constructor.prototype.join = Array.prototype.join;
+    // ... 其他方法
+})();
+// 这样就可以直接使用 arguments 的 join 方法了
+function test(){
+    return arguments.join(',');
+}
+test(1,2,3) // 返回 1,2,3
+</pre>
+<p>3、chain
+js 接口模式</p>
+<p>分离异步数据读取与回调，并采用chain组合多个回调。</p>
+</div>
+</div>
+</body>
+</html>

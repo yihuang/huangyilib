@@ -2,16 +2,16 @@
 js 最佳实践
 ===========
 
-如何封装业务逻辑。
-
 .. contents::
+
+如何封装业务逻辑。
 
 对象/命名空间
 =============
 
-对于js来说，对象也可当作是命名空间。
+对于js来说，对象就是一堆名字与值的映射，其实就是一个命名空间。
 
-最直接的做法::
+先设计一个场景，按照最直接的写法如下的一段代码::
 
   var status = 1;
   function change_status(){
@@ -23,7 +23,10 @@ js 最佳实践
 
   change_status();
 
-使用对象进行封装 ::
+实际上这样的代码并没有什么不好，简单直观，容易理解，当时代码量，业务逻辑复杂度上去后，
+在全局命名空间中积累越来越多的变量名字，容易发生名字冲突。
+
+解决这个问题就可以使用对象对不同的模块进行包装 ::
 
   var status = {
       _status : 1,
@@ -37,7 +40,11 @@ js 最佳实践
 
   status.change();
 
-利用闭包使用私有成员 ::
+在一些极端情况下，也会有人甚至会担心别人会“不小心”直接修改了 status._status 的值，虽然在一个正经的团队中，
+这种事情发生的可能性微乎其微。其实究竟动态语言是否真的需要强制性的私有变量是一个设计决策的问题，
+也引发过很多讨论，这里只是展示一下可能性。
+
+利用闭包实现私有成员 ::
 
   var status = (function(){
       var private_status = 1;
@@ -50,9 +57,28 @@ js 最佳实践
           }
       }
   })()
+
   status.change();
 
-上面的 status 对象都是单件，也可进一步独立出 class，创建多个实例 ::
+上面实现的 status 对象都是单件。但也有一些逻辑，需要能够创建多个实例，重复使用。
+js本身即支持这样的做法： ::
+
+  var Status = function(init_status){
+      this._status = init_status;
+  }
+  Status.prototype.change(){
+      if(this._status==1)
+          this._status=2
+      else
+          this._status=1
+  }
+
+  var status1 = new Status(1);
+  status1.change();
+  var status2 = new Status(2);
+  status1.change();
+
+利用闭包实现私有变量： ::
 
   var Status = function(init_status){
       var private_status = init_status;
@@ -70,64 +96,215 @@ js 最佳实践
   var status2 = Status(2);
   status2.change();
 
-最后还可以对比下 js 本身的基于 prototype 的对象模型 ::
+函数式编程风格
+==============
 
-  var Status = function(init_status){
-      this._status = init_status;
-  }
-  Status.prototype.change(){
-      if(this._status==1)
-          this._status=2
-      else
-          this._status=1
-  }
-  var status1 = Status(1);
-  status1.change();
-  var status2 = Status(2);
-  status2.change();
+js 是命令式与函数式混合的一门语言，从传统眼光来看，js的面向对象是很糟糕的，
+所以 js 的风格可能甚至更倾向于函数式一些。所以学会用函数式的方式来编写 js 很重要。
 
-以上各个方法除了第一种不建议使用外，其他三种方式都有其应用范围。
-第二种对于封装业务逻辑来说最为实用，代码很直观自然，阅读调试都很方便。
-后面两种方式通过闭包实现了私有成员，但增加了抽象程度，也就增加了阅读，理解和调试的难度。
-甚至在性能上也要差一点点。
-最后一种方式等于是模拟了一些语言的 class 的效果，可以重复创建实例。
+当然函数式这个概念涵盖的东西很广，这里只是利用 js 高阶函数（通俗地说就是函数即对象）
+的特性提出一些方便编写js代码的范式。
+
+恰好 javascript1.6 规范中给 Array 增加的几个方法就是很好的范例。 ::
+
+  // Array.forEach
+  var content = [];
+  [1,2,3,4,5,6,7].forEach(function(value, index, array){
+      content.push('<li>'+value+'</li>');
+  })
+  document.getElementById('container').innerHTML = content.join('');
+
+  // Array.filter
+  [1,2,3,4,5,6,7].filter(function(value, index, array){
+      return value>4;
+  }); // 返回 [5,6,7]
+
+  // Array.map
+  [1,2,3,4,5,6,7].map(function(value, index, array){
+      return value * 2;
+  }); // 返回 [2,4,6,8,10,12,14]
+
+  var song_list = [
+      {id:1, name:'aaa'},
+      {id:2, name:'bbb'},
+      {id:3, name:'ccc'}
+  ];
+  var content = song_list.filter(function(value){
+      // 只显示歌曲名长度小于5的
+      return value.name.length<5;
+  }).map(function(value, index, array){
+      return '<li>%(index). <a href="#" onclick="listen(%(song.id));return false;">%(song.name)</a></li>'.format({
+          index:index,
+          song:value
+      });
+  });
+  document.getElementById('container').innerHTML = content.join('');
+
+Array.some
+Array.every
+
+TODO
 
 装饰器
 ======
 
-function logger(func)
-{
-    return function(){
-        log('enter'+func.name);
-        func.apply(this, arguments);
-        log('exit'+func.name);
-    }
-}
-function test()
-{
-... do some thing
-}
-test = logger(test)
+logger
+------
+
+在进入函数和退出函数的时候输出日志
+
+::
+
+  function logger(func)
+  {
+      return function(){
+          console.log('enter function:'+func.name+' with arguments:'+Array.prototype.join.call(arguments, ','));
+          var result = func.apply(this, arguments);
+          console.log('function:'+func.name+' return '+result);
+      }
+  }
+  function test(a){
+      return new Date(a);
+  }
+  test = logger(test);
+  test(1414234243);
+  // 输出:
+  // enter function:test with arguments:1414234243
+  // function:test returns Sat Jan 17 1970 16:50:34 GMT+0800 (CST)
+
+如果函数都放在命名空间里面，还可以一次性对所有函数启动这个调用跟踪器，在调试时开启，
+发布时关闭： ::
+
+  var comm = {
+      func1:function func1(){...},
+      func2:function func2(){...},
+      func3:function func3(){...},
+      func4:function func4(){...}
+  }
+  if(DEBUG){
+      for(var name in comm){
+          if(comm[name].constructor = Function){
+              comm[name] = logger(comm[name]);
+          }
+      }
+  }
+
+这样所有函数都会记录自己的调用的参数和返回值，方便调试。
+
+cache
+-----
+
+对于一些需要大计算量的函数，比如需要构造一大块html，可以用函数的参数作为key对函数的结果进行缓存。在第二次用相同的参数调用时，就直接从缓存中取数据了。
+
+::
+
+  function cache(func){
+      var _cache = {};
+      return function(){
+          // 如何对参数列表进行hash还值得商榷的
+          var key = Array.prototype.join.call(arguments);
+          if(key in _cache){
+              console.log('cache命中');
+              return _cache[key];
+          }
+          else{
+              var result = func.apply(this, arguments);
+              _cache[key] = result;
+              return result;
+          }
+      }
+  }
+  // how to use
+  function render_song_list(song_list){
+      return song_list.map(function(value){
+          return '<li>'+value.name+'</li>';
+      }).join('');
+  }
+  compute = cache(compute);
+  song_list = [{name:'song1'}, {name:'song2'}];
+  compute(song_list) // 返回 <li>song1</li><li>song2</li>
+  compute(song_list) // log: cache命中 返回: <li>song1</li><li>song2</li>
+
+绑定 this
+---------
+
+::
+
+  Function.prototype.bind = function(owner)
+  {
+      var func = this; // 原函数
+      return function(){
+          func.apply(owner, arguments);
+      }
+  }
+
+  var Obj = {
+      a:1
+  }
+  Obj.test = function(){
+      console.log(this.a);
+  }
+
+在这个时候，如果调用 Obj.test() 当然没有什么问题，但是如果把 Obj.test 当作
+事件处理函数或者ajax回调函数之类的话，this就不确定了，执行结果也很难预料，
+或者通过 apply 也可以修改其 this 指向的对象。
+这个时候可以通过 bind 固定 this： ::
+
+  Obj.test = Obj.test.bind(Obj); // 这样 Obj.test 就很像一个面向对象语言中的方法了。
+  Obj.test.apply(null); // apply 不能改变 this
+  some_element.onclick = Obj.test.bind(Obj); // 事件回调时也不会影响到函数中的 this
 
 
-function bind(func, obj)
-{
-    return function(){
-        func.apply(obj, arguments);
-    }
-}
+还是跟this有关
+--------------
 
-function test(){alert(this.a);}
-test = bind(test, {'a':2});
+::
+  
+  function AClass(a){
+      this.a = a;
+  }
+  var obj = new AClass('xxx');
+  // 但有时会忘记写 new 
+  var obj = AClass('xxx');
+  // 就出问题了，但由于js的动态特性，这个错误并不会立刻显现
 
+如何及早捕捉这个问题呢，还是启用一个装饰器在函数的入口增加代码进行判断。 ::
+  
+  function class(func){
+      return function(){
+          if(!(this instanceof arguments.callee)){
+              console.log('error, please use new');
+              return null;
+          }
+          func.apply(this, arguments);
+      }
+  }
+
+  AClass = class(AClass); // 把 AClass 装饰一下
+  var obj = AClass('xxx'); // 忘了写 new ，马上就会打出日志
+
+增强arguments
+=============
+
+在平时的js编程中发现，经常要处理 arguments，实际上 arguments 跟 Array 很像，
+但偏偏不带 Array 那些方法，所以常常要写这样的代码： ::
+  
+  Array.prototype.join(arguments, ',');
+
+不如一次性把 Array 的方法都加到 arguments 的原型里面去。 ::
+
+  (function temp(){
+      arguments.constructor.prototype.join = Array.prototype.join;
+      // ... 其他方法
+  })();
+  // 这样就可以直接使用 arguments 的 join 方法了
+  function test(){
+      return arguments.join(',');
+  }
+  test(1,2,3) // 返回 1,2,3
 
 3、chain
 js 接口模式
  
 分离异步数据读取与回调，并采用chain组合多个回调。
  
-装饰模式
-
-周末对js模式做仔细思考
-
-
