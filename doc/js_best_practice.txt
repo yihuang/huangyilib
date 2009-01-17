@@ -145,17 +145,23 @@ Array.every
 
 TODO
 
-装饰器
-======
+装饰器模式
+===========
 
-logger
+四人帮装饰器模式在动态语言中的变化。
+
+保持被包装函数的接口不变，对它透明的增加逻辑。
+
+应用场景很丰富。
+
+trace
 ------
 
 在进入函数和退出函数的时候输出日志
 
 ::
 
-  function logger(func)
+  function trace(func)
   {
       return function(){
           console.log('enter function:'+func.name+' with arguments:'+Array.prototype.join.call(arguments, ','));
@@ -166,7 +172,7 @@ logger
   function test(a){
       return new Date(a);
   }
-  test = logger(test);
+  test = trace(test);
   test(1414234243);
   // 输出:
   // enter function:test with arguments:1414234243
@@ -184,7 +190,7 @@ logger
   if(DEBUG){
       for(var name in comm){
           if(comm[name].constructor = Function){
-              comm[name] = logger(comm[name]);
+              comm[name] = trace(comm[name]);
           }
       }
   }
@@ -231,10 +237,12 @@ cache
   Cookie.get('user_status');
   Cookie.get('user_status');
 
-这个方法对于同步拉取数据的函数效果很明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。 
+实际上 miniportal 现有的代码中就存在很多对cookie的重复解析，应用上面这个东西可以提高一点性能。
 
-绑定 this
----------
+这个方法对于同步拉取数据的函数效果也会很明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。
+
+解决this漂移
+-------------
 
 ::
 
