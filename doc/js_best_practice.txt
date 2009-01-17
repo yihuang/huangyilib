@@ -1,4 +1,4 @@
-===========
+﻿===========
 js 最佳实践
 ===========
 
@@ -214,16 +214,24 @@ cache
           }
       }
   }
-  // how to use
-  function render_song_list(song_list){
-      return song_list.map(function(value){
-          return '<li>'+value.name+'</li>';
-      }).join('');
+
+使用起来也很简单，找个现成的函数比如：::
+
+  var Cookie = {
+      get:function(name){
+          ...
+      };
+      set:function(name,value){
+          ...
+      };
   }
-  compute = cache(compute);
-  song_list = [{name:'song1'}, {name:'song2'}];
-  compute(song_list) // 返回 <li>song1</li><li>song2</li>
-  compute(song_list) // log: cache命中 返回: <li>song1</li><li>song2</li>
+  Cookie.get = cache(Cookie.get);
+  Cookie.set = cache(Cookie.set);
+  // 然后用相同的参数重复调用一个函数，就不会重新解析 cookie 字符串了，第二次调用直接可以从cache中取到。
+  Cookie.get('user_status');
+  Cookie.get('user_status');
+
+这个方法对于同步拉取数据的函数效果很明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。 
 
 绑定 this
 ---------
@@ -303,8 +311,68 @@ cache
   }
   test(1,2,3) // 返回 1,2,3
 
-3、chain
-js 接口模式
+处理初始化代码
+===============
+
+一般在 window.onload 中进行初始化，但 window.onload 往往太慢，一般初始化代码只要在 dom 加载完毕即可开始执行，
+所以这种代码又往往放到页面的结尾加一个 script 标签进行执行。但还是不够灵活，一来脚本混合到html页面里不利于维护，
+二来如果公用的 js 里面想在初始化的时候加点逻辑就不方便了。
+
+所以需要一个事件，比如 jquery 的 $(document).ready 事件就可以很好地解决问题。
+
+管理全局变量
+=============
+
+全局变量常常是不可避免，同时也是维护起来很麻烦的一个东西。主要问题在于可能出现的名字冲突，而且一旦出现，很难发现。
+这里提一个解决方案： ::
+
+  global = {
+      buildin_names:['buildin_names','define','show'],
+      define:function(name,value){
+          if(buildin_names.contains(name))
+          {
+              warn('与系统名字冲突:'+name);
+              return;
+          }
+          if(!name in global)
+              global[name] = value;
+          else
+              warn('冲突的全局变量:'+name);
+      },
+      show:function(){
+          info('全局变量：');
+          for(var name in global)
+          {
+              if(buildin_names.contains(name))
+                  continue;
+              info(name+' : '+value);
+          }
+      }
+  }
+
+这个需要和相应的规范一起执行，那就是：
+* 所有全局变量一定要通过 global.define('变量名') 进行定义。
+* 所以全局变量一律通过 global.变量名 进行访问。
+
+这样可以比较好地解决问题。并还可以通过 global.show() 很方便地随时查看当前所有定义过的全局变量！
  
-分离异步数据读取与回调，并采用chain组合多个回调。
- 
+JS模板
+=======
+
+miniportal 和 qzone 音乐盒的 js 中都有大量拼接 html 片段的代码，这种代码是最难维护的，引入 js 模板可以极大增强代码可读性。
+
+JS模板我建议可以有两套，一套轻量级的，一套重量级的。
+轻量级的做法可以只处理简单的变量替换，通过正则表达式实现起来也很简单。重量级的做法可以加入条件判断、循环等语法。
+轻量级的比如：::
+
+TODO
+
+deferred 模式管理异步数据拉取
+=============================
+
+这个参考 mochikit 框架的 async 模块，后者参考的是 python 的一个网络编程框架 twisted 中的异步处理模式。
+详细文档可参考 http://mochikit.com/doc/html/MochiKit/Async.html 。
+
+利用 deferred 模式可以方便地处理一些很复杂的异步加载数据的场景。
+
+TODO

@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
-<title>js æœ€ä½³å®è·µ</title>
+<title>js ×î¼ÑÊµ¼ù</title>
 <style type="text/css">
 
 /*
@@ -285,28 +285,32 @@ ul.auto-toc {
 </head>
 <body>
 <div class="document" id="js">
-<h1 class="title">js æœ€ä½³å®è·µ</h1>
+<h1 class="title">js ×î¼ÑÊµ¼ù</h1>
 
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#id1" id="id5">å¯¹è±¡/å‘½åç©ºé—´</a></li>
-<li><a class="reference internal" href="#id2" id="id6">å‡½æ•°å¼ç¼–ç¨‹é£æ ¼</a></li>
-<li><a class="reference internal" href="#id3" id="id7">è£…é¥°å™¨</a><ul>
-<li><a class="reference internal" href="#logger" id="id8">logger</a></li>
-<li><a class="reference internal" href="#cache" id="id9">cache</a></li>
-<li><a class="reference internal" href="#this" id="id10">ç»‘å®š this</a></li>
-<li><a class="reference internal" href="#id4" id="id11">è¿˜æ˜¯è·Ÿthisæœ‰å…³</a></li>
+<li><a class="reference internal" href="#id1" id="id8">¶ÔÏó/ÃüÃû¿Õ¼ä</a></li>
+<li><a class="reference internal" href="#id2" id="id9">º¯ÊıÊ½±à³Ì·ç¸ñ</a></li>
+<li><a class="reference internal" href="#id3" id="id10">×°ÊÎÆ÷</a><ul>
+<li><a class="reference internal" href="#logger" id="id11">logger</a></li>
+<li><a class="reference internal" href="#cache" id="id12">cache</a></li>
+<li><a class="reference internal" href="#this" id="id13">°ó¶¨ this</a></li>
+<li><a class="reference internal" href="#id4" id="id14">»¹ÊÇ¸úthisÓĞ¹Ø</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arguments" id="id12">å¢å¼ºarguments</a></li>
+<li><a class="reference internal" href="#arguments" id="id15">ÔöÇ¿arguments</a></li>
+<li><a class="reference internal" href="#id5" id="id16">´¦Àí³õÊ¼»¯´úÂë</a></li>
+<li><a class="reference internal" href="#id6" id="id17">¹ÜÀíÈ«¾Ö±äÁ¿</a></li>
+<li><a class="reference internal" href="#id7" id="id18">JSÄ£°å</a></li>
+<li><a class="reference internal" href="#deferred" id="id19">deferred Ä£Ê½¹ÜÀíÒì²½Êı¾İÀ­È¡</a></li>
 </ul>
 </div>
-<p>å¦‚ä½•å°è£…ä¸šåŠ¡é€»è¾‘ã€‚</p>
+<p>ÈçºÎ·â×°ÒµÎñÂß¼­¡£</p>
 <div class="section" id="id1">
-<h1><a class="toc-backref" href="#id5">å¯¹è±¡/å‘½åç©ºé—´</a></h1>
-<p>å¯¹äºjsæ¥è¯´ï¼Œå¯¹è±¡å°±æ˜¯ä¸€å †åå­—ä¸å€¼çš„æ˜ å°„ï¼Œå…¶å®å°±æ˜¯ä¸€ä¸ªå‘½åç©ºé—´ã€‚</p>
-<p>å…ˆè®¾è®¡ä¸€ä¸ªåœºæ™¯ï¼ŒæŒ‰ç…§æœ€ç›´æ¥çš„å†™æ³•å¦‚ä¸‹çš„ä¸€æ®µä»£ç :</p>
+<h1><a class="toc-backref" href="#id8">¶ÔÏó/ÃüÃû¿Õ¼ä</a></h1>
+<p>¶ÔÓÚjsÀ´Ëµ£¬¶ÔÏó¾ÍÊÇÒ»¶ÑÃû×ÖÓëÖµµÄÓ³Éä£¬ÆäÊµ¾ÍÊÇÒ»¸öÃüÃû¿Õ¼ä¡£</p>
+<p>ÏÈÉè¼ÆÒ»¸ö³¡¾°£¬°´ÕÕ×îÖ±½ÓµÄĞ´·¨ÈçÏÂµÄÒ»¶Î´úÂë:</p>
 <pre class="literal-block">
 var status = 1;
 function change_status(){
@@ -318,9 +322,9 @@ function change_status(){
 
 change_status();
 </pre>
-<p>å®é™…ä¸Šè¿™æ ·çš„ä»£ç å¹¶æ²¡æœ‰ä»€ä¹ˆä¸å¥½ï¼Œç®€å•ç›´è§‚ï¼Œå®¹æ˜“ç†è§£ï¼Œå½“æ—¶ä»£ç é‡ï¼Œä¸šåŠ¡é€»è¾‘å¤æ‚åº¦ä¸Šå»åï¼Œ
-åœ¨å…¨å±€å‘½åç©ºé—´ä¸­ç§¯ç´¯è¶Šæ¥è¶Šå¤šçš„å˜é‡åå­—ï¼Œå®¹æ˜“å‘ç”Ÿåå­—å†²çªã€‚</p>
-<p>è§£å†³è¿™ä¸ªé—®é¢˜å°±å¯ä»¥ä½¿ç”¨å¯¹è±¡å¯¹ä¸åŒçš„æ¨¡å—è¿›è¡ŒåŒ…è£…</p>
+<p>Êµ¼ÊÉÏÕâÑùµÄ´úÂë²¢Ã»ÓĞÊ²Ã´²»ºÃ£¬¼òµ¥Ö±¹Û£¬ÈİÒ×Àí½â£¬µ±Ê±´úÂëÁ¿£¬ÒµÎñÂß¼­¸´ÔÓ¶ÈÉÏÈ¥ºó£¬
+ÔÚÈ«¾ÖÃüÃû¿Õ¼äÖĞ»ıÀÛÔ½À´Ô½¶àµÄ±äÁ¿Ãû×Ö£¬ÈİÒ×·¢ÉúÃû×Ö³åÍ»¡£</p>
+<p>½â¾öÕâ¸öÎÊÌâ¾Í¿ÉÒÔÊ¹ÓÃ¶ÔÏó¶Ô²»Í¬µÄÄ£¿é½øĞĞ°ü×°</p>
 <pre class="literal-block">
 var status = {
     _status : 1,
@@ -334,10 +338,10 @@ var status = {
 
 status.change();
 </pre>
-<p>åœ¨ä¸€äº›æç«¯æƒ…å†µä¸‹ï¼Œä¹Ÿä¼šæœ‰äººç”šè‡³ä¼šæ‹…å¿ƒåˆ«äººä¼šâ€œä¸å°å¿ƒâ€ç›´æ¥ä¿®æ”¹äº† status._status çš„å€¼ï¼Œè™½ç„¶åœ¨ä¸€ä¸ªæ­£ç»çš„å›¢é˜Ÿä¸­ï¼Œ
-è¿™ç§äº‹æƒ…å‘ç”Ÿçš„å¯èƒ½æ€§å¾®ä¹å…¶å¾®ã€‚å…¶å®ç©¶ç«ŸåŠ¨æ€è¯­è¨€æ˜¯å¦çœŸçš„éœ€è¦å¼ºåˆ¶æ€§çš„ç§æœ‰å˜é‡æ˜¯ä¸€ä¸ªè®¾è®¡å†³ç­–çš„é—®é¢˜ï¼Œ
-ä¹Ÿå¼•å‘è¿‡å¾ˆå¤šè®¨è®ºï¼Œè¿™é‡Œåªæ˜¯å±•ç¤ºä¸€ä¸‹å¯èƒ½æ€§ã€‚</p>
-<p>åˆ©ç”¨é—­åŒ…å®ç°ç§æœ‰æˆå‘˜</p>
+<p>ÔÚÒ»Ğ©¼«¶ËÇé¿öÏÂ£¬Ò²»áÓĞÈËÉõÖÁ»áµ£ĞÄ±ğÈË»á¡°²»Ğ¡ĞÄ¡±Ö±½ÓĞŞ¸ÄÁË status._status µÄÖµ£¬ËäÈ»ÔÚÒ»¸öÕı¾­µÄÍÅ¶ÓÖĞ£¬
+ÕâÖÖÊÂÇé·¢ÉúµÄ¿ÉÄÜĞÔÎ¢ºõÆäÎ¢¡£ÆäÊµ¾¿¾¹¶¯Ì¬ÓïÑÔÊÇ·ñÕæµÄĞèÒªÇ¿ÖÆĞÔµÄË½ÓĞ±äÁ¿ÊÇÒ»¸öÉè¼Æ¾ö²ßµÄÎÊÌâ£¬
+Ò²Òı·¢¹ıºÜ¶àÌÖÂÛ£¬ÕâÀïÖ»ÊÇÕ¹Ê¾Ò»ÏÂ¿ÉÄÜĞÔ¡£</p>
+<p>ÀûÓÃ±Õ°üÊµÏÖË½ÓĞ³ÉÔ±</p>
 <pre class="literal-block">
 var status = (function(){
     var private_status = 1;
@@ -353,8 +357,8 @@ var status = (function(){
 
 status.change();
 </pre>
-<p>ä¸Šé¢å®ç°çš„ status å¯¹è±¡éƒ½æ˜¯å•ä»¶ã€‚ä½†ä¹Ÿæœ‰ä¸€äº›é€»è¾‘ï¼Œéœ€è¦èƒ½å¤Ÿåˆ›å»ºå¤šä¸ªå®ä¾‹ï¼Œé‡å¤ä½¿ç”¨ã€‚
-jsæœ¬èº«å³æ”¯æŒè¿™æ ·çš„åšæ³•ï¼š</p>
+<p>ÉÏÃæÊµÏÖµÄ status ¶ÔÏó¶¼ÊÇµ¥¼ş¡£µ«Ò²ÓĞÒ»Ğ©Âß¼­£¬ĞèÒªÄÜ¹»´´½¨¶à¸öÊµÀı£¬ÖØ¸´Ê¹ÓÃ¡£
+js±¾Éí¼´Ö§³ÖÕâÑùµÄ×ö·¨£º</p>
 <pre class="literal-block">
 var Status = function(init_status){
     this._status = init_status;
@@ -371,7 +375,7 @@ status1.change();
 var status2 = new Status(2);
 status1.change();
 </pre>
-<p>åˆ©ç”¨é—­åŒ…å®ç°ç§æœ‰å˜é‡ï¼š</p>
+<p>ÀûÓÃ±Õ°üÊµÏÖË½ÓĞ±äÁ¿£º</p>
 <pre class="literal-block">
 var Status = function(init_status){
     var private_status = init_status;
@@ -391,12 +395,12 @@ status2.change();
 </pre>
 </div>
 <div class="section" id="id2">
-<h1><a class="toc-backref" href="#id6">å‡½æ•°å¼ç¼–ç¨‹é£æ ¼</a></h1>
-<p>js æ˜¯å‘½ä»¤å¼ä¸å‡½æ•°å¼æ··åˆçš„ä¸€é—¨è¯­è¨€ï¼Œä»ä¼ ç»Ÿçœ¼å…‰æ¥çœ‹ï¼Œjsçš„é¢å‘å¯¹è±¡æ˜¯å¾ˆç³Ÿç³•çš„ï¼Œ
-æ‰€ä»¥ js çš„é£æ ¼å¯èƒ½ç”šè‡³æ›´å€¾å‘äºå‡½æ•°å¼ä¸€äº›ã€‚æ‰€ä»¥å­¦ä¼šç”¨å‡½æ•°å¼çš„æ–¹å¼æ¥ç¼–å†™ js å¾ˆé‡è¦ã€‚</p>
-<p>å½“ç„¶å‡½æ•°å¼è¿™ä¸ªæ¦‚å¿µæ¶µç›–çš„ä¸œè¥¿å¾ˆå¹¿ï¼Œè¿™é‡Œåªæ˜¯åˆ©ç”¨ js é«˜é˜¶å‡½æ•°ï¼ˆé€šä¿—åœ°è¯´å°±æ˜¯å‡½æ•°å³å¯¹è±¡ï¼‰
-çš„ç‰¹æ€§æå‡ºä¸€äº›æ–¹ä¾¿ç¼–å†™jsä»£ç çš„èŒƒå¼ã€‚</p>
-<p>æ°å¥½ javascript1.6 è§„èŒƒä¸­ç»™ Array å¢åŠ çš„å‡ ä¸ªæ–¹æ³•å°±æ˜¯å¾ˆå¥½çš„èŒƒä¾‹ã€‚</p>
+<h1><a class="toc-backref" href="#id9">º¯ÊıÊ½±à³Ì·ç¸ñ</a></h1>
+<p>js ÊÇÃüÁîÊ½Óëº¯ÊıÊ½»ìºÏµÄÒ»ÃÅÓïÑÔ£¬´Ó´«Í³ÑÛ¹âÀ´¿´£¬jsµÄÃæÏò¶ÔÏóÊÇºÜÔã¸âµÄ£¬
+ËùÒÔ js µÄ·ç¸ñ¿ÉÄÜÉõÖÁ¸üÇãÏòÓÚº¯ÊıÊ½Ò»Ğ©¡£ËùÒÔÑ§»áÓÃº¯ÊıÊ½µÄ·½Ê½À´±àĞ´ js ºÜÖØÒª¡£</p>
+<p>µ±È»º¯ÊıÊ½Õâ¸ö¸ÅÄîº­¸ÇµÄ¶«Î÷ºÜ¹ã£¬ÕâÀïÖ»ÊÇÀûÓÃ js ¸ß½×º¯Êı£¨Í¨Ë×µØËµ¾ÍÊÇº¯Êı¼´¶ÔÏó£©
+µÄÌØĞÔÌá³öÒ»Ğ©·½±ã±àĞ´js´úÂëµÄ·¶Ê½¡£</p>
+<p>Ç¡ºÃ javascript1.6 ¹æ·¶ÖĞ¸ø Array Ôö¼ÓµÄ¼¸¸ö·½·¨¾ÍÊÇºÜºÃµÄ·¶Àı¡£</p>
 <pre class="literal-block">
 // Array.forEach
 var content = [];
@@ -408,12 +412,12 @@ document.getElementById('container').innerHTML = content.join('');
 // Array.filter
 [1,2,3,4,5,6,7].filter(function(value, index, array){
     return value&gt;4;
-}); // è¿”å› [5,6,7]
+}); // ·µ»Ø [5,6,7]
 
 // Array.map
 [1,2,3,4,5,6,7].map(function(value, index, array){
     return value * 2;
-}); // è¿”å› [2,4,6,8,10,12,14]
+}); // ·µ»Ø [2,4,6,8,10,12,14]
 
 var song_list = [
     {id:1, name:'aaa'},
@@ -421,7 +425,7 @@ var song_list = [
     {id:3, name:'ccc'}
 ];
 var content = song_list.filter(function(value){
-    // åªæ˜¾ç¤ºæ­Œæ›²åé•¿åº¦å°äº5çš„
+    // Ö»ÏÔÊ¾¸èÇúÃû³¤¶ÈĞ¡ÓÚ5µÄ
     return value.name.length&lt;5;
 }).map(function(value, index, array){
     return '&lt;li&gt;%(index). &lt;a href=&quot;#&quot; onclick=&quot;listen(%(song.id));return false;&quot;&gt;%(song.name)&lt;/a&gt;&lt;/li&gt;'.format({
@@ -436,10 +440,10 @@ Array.every</p>
 <p>TODO</p>
 </div>
 <div class="section" id="id3">
-<h1><a class="toc-backref" href="#id7">è£…é¥°å™¨</a></h1>
+<h1><a class="toc-backref" href="#id10">×°ÊÎÆ÷</a></h1>
 <div class="section" id="logger">
-<h2><a class="toc-backref" href="#id8">logger</a></h2>
-<p>åœ¨è¿›å…¥å‡½æ•°å’Œé€€å‡ºå‡½æ•°çš„æ—¶å€™è¾“å‡ºæ—¥å¿—</p>
+<h2><a class="toc-backref" href="#id11">logger</a></h2>
+<p>ÔÚ½øÈëº¯ÊıºÍÍË³öº¯ÊıµÄÊ±ºòÊä³öÈÕÖ¾</p>
 <pre class="literal-block">
 function logger(func)
 {
@@ -454,12 +458,12 @@ function test(a){
 }
 test = logger(test);
 test(1414234243);
-// è¾“å‡º:
+// Êä³ö:
 // enter function:test with arguments:1414234243
 // function:test returns Sat Jan 17 1970 16:50:34 GMT+0800 (CST)
 </pre>
-<p>å¦‚æœå‡½æ•°éƒ½æ”¾åœ¨å‘½åç©ºé—´é‡Œé¢ï¼Œè¿˜å¯ä»¥ä¸€æ¬¡æ€§å¯¹æ‰€æœ‰å‡½æ•°å¯åŠ¨è¿™ä¸ªè°ƒç”¨è·Ÿè¸ªå™¨ï¼Œåœ¨è°ƒè¯•æ—¶å¼€å¯ï¼Œ
-å‘å¸ƒæ—¶å…³é—­ï¼š</p>
+<p>Èç¹ûº¯Êı¶¼·ÅÔÚÃüÃû¿Õ¼äÀïÃæ£¬»¹¿ÉÒÔÒ»´ÎĞÔ¶ÔËùÓĞº¯ÊıÆô¶¯Õâ¸öµ÷ÓÃ¸ú×ÙÆ÷£¬ÔÚµ÷ÊÔÊ±¿ªÆô£¬
+·¢²¼Ê±¹Ø±Õ£º</p>
 <pre class="literal-block">
 var comm = {
     func1:function func1(){...},
@@ -475,19 +479,19 @@ if(DEBUG){
     }
 }
 </pre>
-<p>è¿™æ ·æ‰€æœ‰å‡½æ•°éƒ½ä¼šè®°å½•è‡ªå·±çš„è°ƒç”¨çš„å‚æ•°å’Œè¿”å›å€¼ï¼Œæ–¹ä¾¿è°ƒè¯•ã€‚</p>
+<p>ÕâÑùËùÓĞº¯Êı¶¼»á¼ÇÂ¼×Ô¼ºµÄµ÷ÓÃµÄ²ÎÊıºÍ·µ»ØÖµ£¬·½±ãµ÷ÊÔ¡£</p>
 </div>
 <div class="section" id="cache">
-<h2><a class="toc-backref" href="#id9">cache</a></h2>
-<p>å¯¹äºä¸€äº›éœ€è¦å¤§è®¡ç®—é‡çš„å‡½æ•°ï¼Œæ¯”å¦‚éœ€è¦æ„é€ ä¸€å¤§å—htmlï¼Œå¯ä»¥ç”¨å‡½æ•°çš„å‚æ•°ä½œä¸ºkeyå¯¹å‡½æ•°çš„ç»“æœè¿›è¡Œç¼“å­˜ã€‚åœ¨ç¬¬äºŒæ¬¡ç”¨ç›¸åŒçš„å‚æ•°è°ƒç”¨æ—¶ï¼Œå°±ç›´æ¥ä»ç¼“å­˜ä¸­å–æ•°æ®äº†ã€‚</p>
+<h2><a class="toc-backref" href="#id12">cache</a></h2>
+<p>¶ÔÓÚÒ»Ğ©ĞèÒª´ó¼ÆËãÁ¿µÄº¯Êı£¬±ÈÈçĞèÒª¹¹ÔìÒ»´ó¿éhtml£¬¿ÉÒÔÓÃº¯ÊıµÄ²ÎÊı×÷Îªkey¶Ôº¯ÊıµÄ½á¹û½øĞĞ»º´æ¡£ÔÚµÚ¶ş´ÎÓÃÏàÍ¬µÄ²ÎÊıµ÷ÓÃÊ±£¬¾ÍÖ±½Ó´Ó»º´æÖĞÈ¡Êı¾İÁË¡£</p>
 <pre class="literal-block">
 function cache(func){
     var _cache = {};
     return function(){
-        // å¦‚ä½•å¯¹å‚æ•°åˆ—è¡¨è¿›è¡Œhashè¿˜å€¼å¾—å•†æ¦·çš„
+        // ÈçºÎ¶Ô²ÎÊıÁĞ±í½øĞĞhash»¹ÖµµÃÉÌÈ¶µÄ
         var key = Array.prototype.join.call(arguments);
         if(key in _cache){
-            console.log('cacheå‘½ä¸­');
+            console.log('cacheÃüÖĞ');
             return _cache[key];
         }
         else{
@@ -497,24 +501,31 @@ function cache(func){
         }
     }
 }
-// how to use
-function render_song_list(song_list){
-    return song_list.map(function(value){
-        return '&lt;li&gt;'+value.name+'&lt;/li&gt;';
-    }).join('');
-}
-compute = cache(compute);
-song_list = [{name:'song1'}, {name:'song2'}];
-compute(song_list) // è¿”å› &lt;li&gt;song1&lt;/li&gt;&lt;li&gt;song2&lt;/li&gt;
-compute(song_list) // log: cacheå‘½ä¸­ è¿”å›: &lt;li&gt;song1&lt;/li&gt;&lt;li&gt;song2&lt;/li&gt;
 </pre>
+<p>Ê¹ÓÃÆğÀ´Ò²ºÜ¼òµ¥£¬ÕÒ¸öÏÖ³ÉµÄº¯Êı±ÈÈç£º:</p>
+<pre class="literal-block">
+var Cookie = {
+    get:function(name){
+        ...
+    };
+    set:function(name,value){
+        ...
+    };
+}
+Cookie.get = cache(Cookie.get);
+Cookie.set = cache(Cookie.set);
+// È»ºóÓÃÏàÍ¬µÄ²ÎÊıÖØ¸´µ÷ÓÃÒ»¸öº¯Êı£¬¾Í²»»áÖØĞÂ½âÎö cookie ×Ö·û´®ÁË£¬µÚ¶ş´Îµ÷ÓÃÖ±½Ó¿ÉÒÔ´ÓcacheÖĞÈ¡µ½¡£
+Cookie.get('user_status');
+Cookie.get('user_status');
+</pre>
+<p>Õâ¸ö·½·¨¶ÔÓÚÍ¬²½À­È¡Êı¾İµÄº¯ÊıĞ§¹ûºÜÃ÷ÏÔ£¬µ«ÊÇ¶ÔÓÚÒì²½À­È¡Êı¾İµÄº¯Êı¾ÍÃ»ÓĞ°ì·¨ÁË£¬ÒòÎªÒì²½À­È¡Êı¾İµÄº¯ÊıÁ¢¿Ì·µ»Ø¡£</p>
 </div>
 <div class="section" id="this">
-<h2><a class="toc-backref" href="#id10">ç»‘å®š this</a></h2>
+<h2><a class="toc-backref" href="#id13">°ó¶¨ this</a></h2>
 <pre class="literal-block">
 Function.prototype.bind = function(owner)
 {
-    var func = this; // åŸå‡½æ•°
+    var func = this; // Ô­º¯Êı
     return function(){
         func.apply(owner, arguments);
     }
@@ -527,28 +538,28 @@ Obj.test = function(){
     console.log(this.a);
 }
 </pre>
-<p>åœ¨è¿™ä¸ªæ—¶å€™ï¼Œå¦‚æœè°ƒç”¨ Obj.test() å½“ç„¶æ²¡æœ‰ä»€ä¹ˆé—®é¢˜ï¼Œä½†æ˜¯å¦‚æœæŠŠ Obj.test å½“ä½œ
-äº‹ä»¶å¤„ç†å‡½æ•°æˆ–è€…ajaxå›è°ƒå‡½æ•°ä¹‹ç±»çš„è¯ï¼Œthiså°±ä¸ç¡®å®šäº†ï¼Œæ‰§è¡Œç»“æœä¹Ÿå¾ˆéš¾é¢„æ–™ï¼Œ
-æˆ–è€…é€šè¿‡ apply ä¹Ÿå¯ä»¥ä¿®æ”¹å…¶ this æŒ‡å‘çš„å¯¹è±¡ã€‚
-è¿™ä¸ªæ—¶å€™å¯ä»¥é€šè¿‡ bind å›ºå®š thisï¼š</p>
+<p>ÔÚÕâ¸öÊ±ºò£¬Èç¹ûµ÷ÓÃ Obj.test() µ±È»Ã»ÓĞÊ²Ã´ÎÊÌâ£¬µ«ÊÇÈç¹û°Ñ Obj.test µ±×÷
+ÊÂ¼ş´¦Àíº¯Êı»òÕßajax»Øµ÷º¯ÊıÖ®ÀàµÄ»°£¬this¾Í²»È·¶¨ÁË£¬Ö´ĞĞ½á¹ûÒ²ºÜÄÑÔ¤ÁÏ£¬
+»òÕßÍ¨¹ı apply Ò²¿ÉÒÔĞŞ¸ÄÆä this Ö¸ÏòµÄ¶ÔÏó¡£
+Õâ¸öÊ±ºò¿ÉÒÔÍ¨¹ı bind ¹Ì¶¨ this£º</p>
 <pre class="literal-block">
-Obj.test = Obj.test.bind(Obj); // è¿™æ · Obj.test å°±å¾ˆåƒä¸€ä¸ªé¢å‘å¯¹è±¡è¯­è¨€ä¸­çš„æ–¹æ³•äº†ã€‚
-Obj.test.apply(null); // apply ä¸èƒ½æ”¹å˜ this
-some_element.onclick = Obj.test.bind(Obj); // äº‹ä»¶å›è°ƒæ—¶ä¹Ÿä¸ä¼šå½±å“åˆ°å‡½æ•°ä¸­çš„ this
+Obj.test = Obj.test.bind(Obj); // ÕâÑù Obj.test ¾ÍºÜÏñÒ»¸öÃæÏò¶ÔÏóÓïÑÔÖĞµÄ·½·¨ÁË¡£
+Obj.test.apply(null); // apply ²»ÄÜ¸Ä±ä this
+some_element.onclick = Obj.test.bind(Obj); // ÊÂ¼ş»Øµ÷Ê±Ò²²»»áÓ°Ïìµ½º¯ÊıÖĞµÄ this
 </pre>
 </div>
 <div class="section" id="id4">
-<h2><a class="toc-backref" href="#id11">è¿˜æ˜¯è·Ÿthisæœ‰å…³</a></h2>
+<h2><a class="toc-backref" href="#id14">»¹ÊÇ¸úthisÓĞ¹Ø</a></h2>
 <pre class="literal-block">
 function AClass(a){
     this.a = a;
 }
 var obj = new AClass('xxx');
-// ä½†æœ‰æ—¶ä¼šå¿˜è®°å†™ new
+// µ«ÓĞÊ±»áÍü¼ÇĞ´ new
 var obj = AClass('xxx');
-// å°±å‡ºé—®é¢˜äº†ï¼Œä½†ç”±äºjsçš„åŠ¨æ€ç‰¹æ€§ï¼Œè¿™ä¸ªé”™è¯¯å¹¶ä¸ä¼šç«‹åˆ»æ˜¾ç°
+// ¾Í³öÎÊÌâÁË£¬µ«ÓÉÓÚjsµÄ¶¯Ì¬ÌØĞÔ£¬Õâ¸ö´íÎó²¢²»»áÁ¢¿ÌÏÔÏÖ
 </pre>
-<p>å¦‚ä½•åŠæ—©æ•æ‰è¿™ä¸ªé—®é¢˜å‘¢ï¼Œè¿˜æ˜¯å¯ç”¨ä¸€ä¸ªè£…é¥°å™¨åœ¨å‡½æ•°çš„å…¥å£å¢åŠ ä»£ç è¿›è¡Œåˆ¤æ–­ã€‚</p>
+<p>ÈçºÎ¼°Ôç²¶×½Õâ¸öÎÊÌâÄØ£¬»¹ÊÇÆôÓÃÒ»¸ö×°ÊÎÆ÷ÔÚº¯ÊıµÄÈë¿ÚÔö¼Ó´úÂë½øĞĞÅĞ¶Ï¡£</p>
 <pre class="literal-block">
 function class(func){
     return function(){
@@ -560,34 +571,91 @@ function class(func){
     }
 }
 
-AClass = class(AClass); // æŠŠ AClass è£…é¥°ä¸€ä¸‹
-var obj = AClass('xxx'); // å¿˜äº†å†™ new ï¼Œé©¬ä¸Šå°±ä¼šæ‰“å‡ºæ—¥å¿—
+AClass = class(AClass); // °Ñ AClass ×°ÊÎÒ»ÏÂ
+var obj = AClass('xxx'); // ÍüÁËĞ´ new £¬ÂíÉÏ¾Í»á´ò³öÈÕÖ¾
 </pre>
 </div>
 </div>
 <div class="section" id="arguments">
-<h1><a class="toc-backref" href="#id12">å¢å¼ºarguments</a></h1>
-<p>åœ¨å¹³æ—¶çš„jsç¼–ç¨‹ä¸­å‘ç°ï¼Œç»å¸¸è¦å¤„ç† argumentsï¼Œå®é™…ä¸Š arguments è·Ÿ Array å¾ˆåƒï¼Œ
-ä½†ååä¸å¸¦ Array é‚£äº›æ–¹æ³•ï¼Œæ‰€ä»¥å¸¸å¸¸è¦å†™è¿™æ ·çš„ä»£ç ï¼š</p>
+<h1><a class="toc-backref" href="#id15">ÔöÇ¿arguments</a></h1>
+<p>ÔÚÆ½Ê±µÄjs±à³ÌÖĞ·¢ÏÖ£¬¾­³£Òª´¦Àí arguments£¬Êµ¼ÊÉÏ arguments ¸ú Array ºÜÏñ£¬
+µ«Æ«Æ«²»´ø Array ÄÇĞ©·½·¨£¬ËùÒÔ³£³£ÒªĞ´ÕâÑùµÄ´úÂë£º</p>
 <pre class="literal-block">
 Array.prototype.join(arguments, ',');
 </pre>
-<p>ä¸å¦‚ä¸€æ¬¡æ€§æŠŠ Array çš„æ–¹æ³•éƒ½åŠ åˆ° arguments çš„åŸå‹é‡Œé¢å»ã€‚</p>
+<p>²»ÈçÒ»´ÎĞÔ°Ñ Array µÄ·½·¨¶¼¼Óµ½ arguments µÄÔ­ĞÍÀïÃæÈ¥¡£</p>
 <pre class="literal-block">
 (function temp(){
     arguments.constructor.prototype.join = Array.prototype.join;
-    // ... å…¶ä»–æ–¹æ³•
+    // ... ÆäËû·½·¨
 })();
-// è¿™æ ·å°±å¯ä»¥ç›´æ¥ä½¿ç”¨ arguments çš„ join æ–¹æ³•äº†
+// ÕâÑù¾Í¿ÉÒÔÖ±½ÓÊ¹ÓÃ arguments µÄ join ·½·¨ÁË
 function test(){
     return arguments.join(',');
 }
-test(1,2,3) // è¿”å› 1,2,3
+test(1,2,3) // ·µ»Ø 1,2,3
 </pre>
-<p>3ã€chain
-js æ¥å£æ¨¡å¼</p>
-<p>åˆ†ç¦»å¼‚æ­¥æ•°æ®è¯»å–ä¸å›è°ƒï¼Œå¹¶é‡‡ç”¨chainç»„åˆå¤šä¸ªå›è°ƒã€‚</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="toc-backref" href="#id16">´¦Àí³õÊ¼»¯´úÂë</a></h1>
+<p>Ò»°ãÔÚ window.onload ÖĞ½øĞĞ³õÊ¼»¯£¬µ« window.onload ÍùÍùÌ«Âı£¬Ò»°ã³õÊ¼»¯´úÂëÖ»ÒªÔÚ dom ¼ÓÔØÍê±Ï¼´¿É¿ªÊ¼Ö´ĞĞ£¬
+ËùÒÔÕâÖÖ´úÂëÓÖÍùÍù·Åµ½Ò³ÃæµÄ½áÎ²¼ÓÒ»¸ö script ±êÇ©½øĞĞÖ´ĞĞ¡£µ«»¹ÊÇ²»¹»Áé»î£¬Ò»À´½Å±¾»ìºÏµ½htmlÒ³ÃæÀï²»ÀûÓÚÎ¬»¤£¬
+¶şÀ´Èç¹û¹«ÓÃµÄ js ÀïÃæÏëÔÚ³õÊ¼»¯µÄÊ±ºò¼ÓµãÂß¼­¾Í²»·½±ãÁË¡£</p>
+<p>ËùÒÔĞèÒªÒ»¸öÊÂ¼ş£¬±ÈÈç jquery µÄ $(document).ready ÊÂ¼ş¾Í¿ÉÒÔºÜºÃµØ½â¾öÎÊÌâ¡£</p>
+</div>
+<div class="section" id="id6">
+<h1><a class="toc-backref" href="#id17">¹ÜÀíÈ«¾Ö±äÁ¿</a></h1>
+<p>È«¾Ö±äÁ¿³£³£ÊÇ²»¿É±ÜÃâ£¬Í¬Ê±Ò²ÊÇÎ¬»¤ÆğÀ´ºÜÂé·³µÄÒ»¸ö¶«Î÷¡£Ö÷ÒªÎÊÌâÔÚÓÚ¿ÉÄÜ³öÏÖµÄÃû×Ö³åÍ»£¬¶øÇÒÒ»µ©³öÏÖ£¬ºÜÄÑ·¢ÏÖ¡£
+ÕâÀïÌáÒ»¸ö½â¾ö·½°¸£º</p>
+<pre class="literal-block">
+global = {
+    buildin_names:['buildin_names','define','show'],
+    define:function(name,value){
+        if(buildin_names.contains(name))
+        {
+            warn('ÓëÏµÍ³Ãû×Ö³åÍ»:'+name);
+            return;
+        }
+        if(!name in global)
+            global[name] = value;
+        else
+            warn('³åÍ»µÄÈ«¾Ö±äÁ¿:'+name);
+    },
+    show:function(){
+        info('È«¾Ö±äÁ¿£º');
+        for(var name in global)
+        {
+            if(buildin_names.contains(name))
+                continue;
+            info(name+' : '+value);
+        }
+    }
+}
+</pre>
+<p>Õâ¸öĞèÒªºÍÏàÓ¦µÄ¹æ·¶Ò»ÆğÖ´ĞĞ£¬ÄÇ¾ÍÊÇ£º
+* ËùÓĞÈ«¾Ö±äÁ¿Ò»¶¨ÒªÍ¨¹ı global.define('±äÁ¿Ãû') ½øĞĞ¶¨Òå¡£
+* ËùÒÔÈ«¾Ö±äÁ¿Ò»ÂÉÍ¨¹ı global.±äÁ¿Ãû ½øĞĞ·ÃÎÊ¡£</p>
+<p>ÕâÑù¿ÉÒÔ±È½ÏºÃµØ½â¾öÎÊÌâ¡£²¢»¹¿ÉÒÔÍ¨¹ı global.show() ºÜ·½±ãµØËæÊ±²é¿´µ±Ç°ËùÓĞ¶¨Òå¹ıµÄÈ«¾Ö±äÁ¿£¡</p>
+</div>
+<div class="section" id="id7">
+<h1><a class="toc-backref" href="#id18">JSÄ£°å</a></h1>
+<p>miniportal ºÍ qzone ÒôÀÖºĞµÄ js ÖĞ¶¼ÓĞ´óÁ¿Æ´½Ó html Æ¬¶ÎµÄ´úÂë£¬ÕâÖÖ´úÂëÊÇ×îÄÑÎ¬»¤µÄ£¬ÒıÈë js Ä£°å¿ÉÒÔ¼«´óÔöÇ¿´úÂë¿É¶ÁĞÔ¡£</p>
+<p>JSÄ£°åÎÒ½¨Òé¿ÉÒÔÓĞÁ½Ì×£¬Ò»Ì×ÇáÁ¿¼¶µÄ£¬Ò»Ì×ÖØÁ¿¼¶µÄ¡£
+ÇáÁ¿¼¶µÄ×ö·¨¿ÉÒÔÖ»´¦Àí¼òµ¥µÄ±äÁ¿Ìæ»»£¬Í¨¹ıÕıÔò±í´ïÊ½ÊµÏÖÆğÀ´Ò²ºÜ¼òµ¥¡£ÖØÁ¿¼¶µÄ×ö·¨¿ÉÒÔ¼ÓÈëÌõ¼şÅĞ¶Ï¡¢Ñ­»·µÈÓï·¨¡£
+ÇáÁ¿¼¶µÄ±ÈÈç£º:</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 368)</p>
+Literal block expected; none found.</div>
+<p>TODO</p>
+</div>
+<div class="section" id="deferred">
+<h1><a class="toc-backref" href="#id19">deferred Ä£Ê½¹ÜÀíÒì²½Êı¾İÀ­È¡</a></h1>
+<p>Õâ¸ö²Î¿¼ mochikit ¿ò¼ÜµÄ async Ä£¿é£¬ºóÕß²Î¿¼µÄÊÇ python µÄÒ»¸öÍøÂç±à³Ì¿ò¼Ü twisted ÖĞµÄÒì²½´¦ÀíÄ£Ê½¡£
+ÏêÏ¸ÎÄµµ¿É²Î¿¼ <a class="reference external" href="http://mochikit.com/doc/html/MochiKit/Async.html">http://mochikit.com/doc/html/MochiKit/Async.html</a> ¡£</p>
+<p>ÀûÓÃ deferred Ä£Ê½¿ÉÒÔ·½±ãµØ´¦ÀíÒ»Ğ©ºÜ¸´ÔÓµÄÒì²½¼ÓÔØÊı¾İµÄ³¡¾°¡£</p>
+<p>TODO</p>
 </div>
 </div>
 </body>
 </html>
+
