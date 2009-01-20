@@ -291,7 +291,7 @@ ul.auto-toc {
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#id1" id="id8">对象/命名空间</a></li>
-<li><a class="reference internal" href="#id2" id="id9">函数式编程风格</a></li>
+<li><a class="reference internal" href="#id2" id="id9">函数式编程</a></li>
 <li><a class="reference internal" href="#id3" id="id10">装饰器模式</a><ul>
 <li><a class="reference internal" href="#trace" id="id11">trace</a></li>
 <li><a class="reference internal" href="#cache" id="id12">cache</a></li>
@@ -299,14 +299,16 @@ ul.auto-toc {
 <li><a class="reference internal" href="#id4" id="id14">还是跟this有关</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arguments" id="id15">增强arguments</a></li>
+<li><a class="reference internal" href="#arguments" id="id15">增强arguments对象</a></li>
 <li><a class="reference internal" href="#id5" id="id16">处理初始化代码</a></li>
 <li><a class="reference internal" href="#id6" id="id17">管理全局变量</a></li>
 <li><a class="reference internal" href="#id7" id="id18">JS模板</a></li>
 <li><a class="reference internal" href="#deferred" id="id19">deferred 模式管理异步数据拉取</a></li>
 </ul>
 </div>
-<p>关于如何编写高质量的js代码，js如何封装业务逻辑的总结。</p>
+<p>对于js框架，除了封装浏览器在dom 事件等方面的差异，还有很重要的一方面是要发掘并固化一些有用的设计模式，并鼓励高质量代码的编写。
+本文总结一些我自己在这方面的一些经验，其中有些是从其他开源JS框架中拿来，也有些是受其他语言(比如python)的启发并转移到python上来的。
+希望能起到一个抛砖引玉的作用。</p>
 <div class="section" id="id1">
 <h1><a class="toc-backref" href="#id8">对象/命名空间</a></h1>
 <p>对于js来说，对象就是一堆名字与值的映射，其实就是一个命名空间。</p>
@@ -395,7 +397,7 @@ status2.change();
 </pre>
 </div>
 <div class="section" id="id2">
-<h1><a class="toc-backref" href="#id9">函数式编程风格</a></h1>
+<h1><a class="toc-backref" href="#id9">函数式编程</a></h1>
 <p>js 是命令式与函数式混合的一门语言，从传统眼光来看，js的面向对象是很糟糕的，
 js 的风格其实更倾向于函数式一些。所以学会用函数式的方式来编写 js 很重要。</p>
 <p>当然函数式这个概念涵盖的东西很广，这里只是利用 js 高阶函数（通俗地说就是函数即对象）
@@ -446,7 +448,7 @@ Array.every</p>
 <p>应用场景很丰富，比如：</p>
 <div class="section" id="trace">
 <h2><a class="toc-backref" href="#id11">trace</a></h2>
-<p>在进入函数和退出函数的时候输出日志</p>
+<p>在进入和退出被包装函数的时候输出日志</p>
 <pre class="literal-block">
 function trace(func)
 {
@@ -454,8 +456,10 @@ function trace(func)
         console.log('enter function:'+func.name+' with arguments:'+Array.prototype.join.call(arguments, ','));
         var result = func.apply(this, arguments);
         console.log('function:'+func.name+' return '+result);
+        return result;
     }
 }
+// test
 function test(a){
     return new Date(a);
 }
@@ -487,7 +491,7 @@ if(DEBUG){
 </div>
 <div class="section" id="cache">
 <h2><a class="toc-backref" href="#id12">cache</a></h2>
-<p>对于一些需要大计算量的函数，比如需要构造一大块html，可以用函数的参数作为key对函数的结果进行缓存。在第二次用相同的参数调用时，就直接从缓存中取数据了。</p>
+<p>对于一些需要大计算量的函数，比如需要构造一大块html，可以使用函数的参数作为key对函数的结果自动进行缓存。在第二次用相同的参数调用时，就可以直接从缓存中取数据了。</p>
 <pre class="literal-block">
 function cache(func){
     var _cache = {};
@@ -518,11 +522,11 @@ var Cookie = {
 }
 Cookie.get = cache(Cookie.get);
 Cookie.set = cache(Cookie.set);
-// 然后用相同的参数重复调用一个函数，就不会重新解析 cookie 字符串了，第二次调用直接可以从cache中取到。
+// 然后用相同的参数重复调用同一个函数，第二次就不会重新解析 cookie 字符串了，直接可以从cache中取到结果。
 Cookie.get('user_status');
 Cookie.get('user_status');
 </pre>
-<p>实际上 miniportal 现有的代码中就存在很多对cookie的重复解析，应用上面这个东西可以提高一点性能。</p>
+<p>实际上 miniportal 现有的代码中就存在一些对cookie的重复解析，应用上面这个东西可以提高一点性能。</p>
 <p>这个方法对于同步拉取数据的函数效果会非常明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。</p>
 </div>
 <div class="section" id="this">
@@ -562,27 +566,27 @@ function AClass(a){
 var obj = new AClass('xxx');
 // 但有时会忘记写 new
 var obj = AClass('xxx');
-// 就出问题了，但由于js的动态特性，这个错误并不会立刻显现
+// 就出问题了，这个情况下obj还是没有a这个属性，因为这个时候this是window对象，结果定义了一个全局变量，但由于js的动态特性，这个错误并不会立刻显现
 </pre>
-<p>如何及早捕捉这个问题呢，还是启用一个装饰器在函数的入口增加代码进行判断。</p>
+<p>如何及早捕捉这个问题呢，可以用一个装饰器在函数的入口增加代码进行判断。</p>
 <pre class="literal-block">
 function class(func){
     return function(){
         if(!(this instanceof arguments.callee)){
-            console.log('error, please use new');
+            warn('error, please use new');
             return null;
         }
         func.apply(this, arguments);
     }
 }
 
-AClass = class(AClass); // 使用前把 AClass 装饰一下
+AClass = class(AClass); // 函数定义后把 AClass 装饰一下
 var obj = AClass('xxx'); // 忘了写 new ，马上就会打出日志
 </pre>
 </div>
 </div>
 <div class="section" id="arguments">
-<h1><a class="toc-backref" href="#id15">增强arguments</a></h1>
+<h1><a class="toc-backref" href="#id15">增强arguments对象</a></h1>
 <p>在平时的js编程中发现，经常要处理 arguments，实际上 arguments 跟 Array 很像，
 但偏偏不带 Array 那些方法，所以常常要写这样的代码：</p>
 <pre class="literal-block">
@@ -606,7 +610,7 @@ test(1,2,3) // 返回 1,2,3
 <p>一般在 window.onload 中进行初始化，但 window.onload 往往来得太慢，一般页面初始化代码只需要在 dom 加载完毕即可开始执行，
 所以这种代码又往往放到页面的结尾加一个 script 标签进行执行。但这种做法还是不够灵活，一来脚本混合到html页面里不利于维护，
 二来如果公用的 js 里面想在初始化的时候加点逻辑也很不方便。</p>
-<p>所以需要一个事件，比如 jquery 的 $(document).ready 事件就可以很好地解决问题。</p>
+<p>所以需要一个事件，引入一个类似 jquery 的 $(document).ready 事件就可以很好地解决问题。</p>
 </div>
 <div class="section" id="id6">
 <h1><a class="toc-backref" href="#id17">管理全局变量</a></h1>
@@ -653,7 +657,7 @@ global = {
 轻量级的做法可以只处理简单的变量替换，通过正则表达式实现起来也很简单。重量级的做法可以加入条件判断、循环等语法。
 轻量级的比如：:</p>
 <div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 378)</p>
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 382)</p>
 Literal block expected; none found.</div>
 <p>TODO</p>
 </div>
