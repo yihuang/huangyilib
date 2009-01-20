@@ -306,7 +306,7 @@ ul.auto-toc {
 <li><a class="reference internal" href="#deferred" id="id19">deferred 模式管理异步数据拉取</a></li>
 </ul>
 </div>
-<p>如何封装业务逻辑。</p>
+<p>关于如何编写高质量的js代码，js如何封装业务逻辑的总结。</p>
 <div class="section" id="id1">
 <h1><a class="toc-backref" href="#id8">对象/命名空间</a></h1>
 <p>对于js来说，对象就是一堆名字与值的映射，其实就是一个命名空间。</p>
@@ -322,9 +322,9 @@ function change_status(){
 
 change_status();
 </pre>
-<p>实际上这样的代码并没有什么不好，简单直观，容易理解，当时代码量，业务逻辑复杂度上去后，
+<p>实际上这样的代码并没有什么不好，简单直观，容易理解，只是当代码量，业务逻辑复杂度上去后，
 在全局命名空间中积累越来越多的变量名字，容易发生名字冲突。</p>
-<p>解决这个问题就可以使用对象对不同的模块进行包装</p>
+<p>解决这个问题的一个办法就可以使用对象对不同的模块进行包装</p>
 <pre class="literal-block">
 var status = {
     _status : 1,
@@ -397,7 +397,7 @@ status2.change();
 <div class="section" id="id2">
 <h1><a class="toc-backref" href="#id9">函数式编程风格</a></h1>
 <p>js 是命令式与函数式混合的一门语言，从传统眼光来看，js的面向对象是很糟糕的，
-所以 js 的风格可能甚至更倾向于函数式一些。所以学会用函数式的方式来编写 js 很重要。</p>
+js 的风格其实更倾向于函数式一些。所以学会用函数式的方式来编写 js 很重要。</p>
 <p>当然函数式这个概念涵盖的东西很广，这里只是利用 js 高阶函数（通俗地说就是函数即对象）
 的特性提出一些方便编写js代码的范式。</p>
 <p>恰好 javascript1.6 规范中给 Array 增加的几个方法就是很好的范例。</p>
@@ -442,8 +442,8 @@ Array.every</p>
 <div class="section" id="id3">
 <h1><a class="toc-backref" href="#id10">装饰器模式</a></h1>
 <p>四人帮装饰器模式在动态语言中的变化。</p>
-<p>保持被包装函数的接口不变，对它透明的增加逻辑。</p>
-<p>应用场景很丰富。</p>
+<p>保持被包装函数的接口不变，对被包装的函数透明的增加逻辑。透明意味着装饰器可以重用，可以给被包装函数同时应用多个装饰器等。</p>
+<p>应用场景很丰富，比如：</p>
 <div class="section" id="trace">
 <h2><a class="toc-backref" href="#id11">trace</a></h2>
 <p>在进入函数和退出函数的时候输出日志</p>
@@ -482,7 +482,8 @@ if(DEBUG){
     }
 }
 </pre>
-<p>这样所有函数都会记录自己的调用的参数和返回值，方便调试。</p>
+<p>这样所有函数都会记录自己的调用的参数和返回值，方便调试。
+其实这已经是简单的面向方面编程了。</p>
 </div>
 <div class="section" id="cache">
 <h2><a class="toc-backref" href="#id12">cache</a></h2>
@@ -522,7 +523,7 @@ Cookie.get('user_status');
 Cookie.get('user_status');
 </pre>
 <p>实际上 miniportal 现有的代码中就存在很多对cookie的重复解析，应用上面这个东西可以提高一点性能。</p>
-<p>这个方法对于同步拉取数据的函数效果也会很明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。</p>
+<p>这个方法对于同步拉取数据的函数效果会非常明显，但是对于异步拉取数据的函数就没有办法了，因为异步拉取数据的函数立刻返回。</p>
 </div>
 <div class="section" id="this">
 <h2><a class="toc-backref" href="#id13">解决this漂移</a></h2>
@@ -575,7 +576,7 @@ function class(func){
     }
 }
 
-AClass = class(AClass); // 把 AClass 装饰一下
+AClass = class(AClass); // 使用前把 AClass 装饰一下
 var obj = AClass('xxx'); // 忘了写 new ，马上就会打出日志
 </pre>
 </div>
@@ -587,7 +588,7 @@ var obj = AClass('xxx'); // 忘了写 new ，马上就会打出日志
 <pre class="literal-block">
 Array.prototype.join(arguments, ',');
 </pre>
-<p>不如一次性把 Array 的方法都加到 arguments 的原型里面去。</p>
+<p>不如一次性把需要的 Array 的方法都加到 arguments 的原型里面去。</p>
 <pre class="literal-block">
 (function temp(){
     arguments.constructor.prototype.join = Array.prototype.join;
@@ -602,9 +603,9 @@ test(1,2,3) // 返回 1,2,3
 </div>
 <div class="section" id="id5">
 <h1><a class="toc-backref" href="#id16">处理初始化代码</a></h1>
-<p>一般在 window.onload 中进行初始化，但 window.onload 往往太慢，一般初始化代码只要在 dom 加载完毕即可开始执行，
-所以这种代码又往往放到页面的结尾加一个 script 标签进行执行。但还是不够灵活，一来脚本混合到html页面里不利于维护，
-二来如果公用的 js 里面想在初始化的时候加点逻辑就不方便了。</p>
+<p>一般在 window.onload 中进行初始化，但 window.onload 往往来得太慢，一般页面初始化代码只需要在 dom 加载完毕即可开始执行，
+所以这种代码又往往放到页面的结尾加一个 script 标签进行执行。但这种做法还是不够灵活，一来脚本混合到html页面里不利于维护，
+二来如果公用的 js 里面想在初始化的时候加点逻辑也很不方便。</p>
 <p>所以需要一个事件，比如 jquery 的 $(document).ready 事件就可以很好地解决问题。</p>
 </div>
 <div class="section" id="id6">
@@ -636,9 +637,13 @@ global = {
     }
 }
 </pre>
-<p>这个需要和相应的规范一起执行，那就是：
-* 所有全局变量一定要通过 global.define('变量名') 进行定义。
-* 所以全局变量一律通过 global.变量名 进行访问。</p>
+<p>这个需要和相应的规范一起执行，那就是：</p>
+<blockquote>
+<ul class="simple">
+<li>所有全局变量一定要通过 global.define('变量名') 进行定义。</li>
+<li>所以全局变量一律通过 global.变量名 进行访问。</li>
+</ul>
+</blockquote>
 <p>这样可以比较好地解决问题。并还可以通过 global.show() 很方便地随时查看当前所有定义过的全局变量！</p>
 </div>
 <div class="section" id="id7">
@@ -648,7 +653,7 @@ global = {
 轻量级的做法可以只处理简单的变量替换，通过正则表达式实现起来也很简单。重量级的做法可以加入条件判断、循环等语法。
 轻量级的比如：:</p>
 <div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 376)</p>
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 378)</p>
 Literal block expected; none found.</div>
 <p>TODO</p>
 </div>
