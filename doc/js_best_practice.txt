@@ -2,6 +2,8 @@
 js 最佳实践
 ===========
 
+:author: yihuang
+
 .. contents::
 
 对于js框架，除了封装浏览器在dom 事件等方面的差异，还有很重要的一方面是要发掘并固化一些有用的设计模式，并鼓励高质量代码的编写。
@@ -386,6 +388,104 @@ deferred 模式管理异步数据拉取(*)
 这个参考 mochikit 框架的 async 模块，后者参考的是 python 的一个网络编程框架 twisted 中的异步处理模式。
 详细文档可参考 http://mochikit.com/doc/html/MochiKit/Async.html 。
 
-利用 deferred 模式可以方便地处理一些很复杂的异步加载数据的场景。
+deferred 模式将一份当前不可用的数据、数据当前的状态、以及相应的回调函数链封装成为一个对象，使得异步
+回调的处理变得更加直观。
 
-TODO
+::
+
+  // 这是一个简化的实现
+  function load_json(url)
+  {
+      var deferred = new Deferred();
+      loadJsonData(url, function(data){
+          deferred.callback(data);
+      }, function(err){
+          deferred.errback(err);
+      });
+      return deferred;
+  }
+
+  // 如何使用
+  var some_deferred = load_json('...');
+  some_deferred.addCallback(function(data){
+      // 处理数据
+  });
+  some_deferred.addErrback(function(err){
+      // 处理错误
+  });
+
+利用 deferred 模式可以方便地处理一些过去会很麻烦的异步加载数据的场景。
+
+ * 同一份数据对应多处回调
+   有的时候一份公用的数据，比如获取用户状态信息，可能很多地方需要使用，当然，情况简单的时候，我们可以尽量地把
+   所有需要操作用户状态信息的代码集中放到一个js回调函数中来。但是为了要增强代码模块性和可重用性，很可能一个通用的处理逻辑
+   放在公用js中，而某些页面需要做一些特殊的处理而把逻辑放在页面自己的js中。这样就不好处理了。deferred 可以很好地处理这样的场景。
+
+   在这种情况下，公用数据只需要提供一个全局的 deferred 对象即可，其他js都可以引用这个 deferred 对象增加回调处理函数。::
+     
+     global.define('deferred_user_info');
+     function load_user_info(){
+         global.deferred_user_info = load_json('http://....get_user_info.fcg');
+     }
+
+     ...
+
+     global.deferred_user_info.addCallback( success_callback1 );
+     global.deferred_user_info.addErrback( fail_callback1 );
+     global.deferred_user_info.addCallback( success_callback2 );
+     global.deferred_user_info.addErrback( fail_callback2 );
+     ...
+
+   回调函数按照注册的顺序执行。
+
+ * 多个地方需要获取同一份数据
+   为了提高用户响应速度，前台可以在页面加载完毕就立刻对一些用户将要获取的数据进行预读，放到一个全局变量里，这样当用户真的操作到这里的时候，
+   数据可以直接读一个变量立即展示。
+
+   但是由于加载数据有快慢，用户操作的到这里的时候，数据有可能还在预读中，还没有加载完毕。这个情况按照简单的做法就不太好解决。
+   使用 deferred 的话就是这样的：::
+     
+     // 定义读取数据函数
+     global.define('deferred_user_info');
+     function load_user_info(){
+         global.deferred_user_info = load_json('http://....get_user_info.fcg');
+         
+     }
+     
+     ...
+
+     // 页面加载完毕的时候进行预读
+     global.define('user_info');
+     $(document).ready(function(){
+         load_user_info();
+         global.deferred_user_info.addCallBacks(function(data){
+             global.user_info = data;
+         }, function(err){
+             global.user_info = null;
+         });
+     });
+
+     ...
+
+     // 用户实际执行一个依赖用户信息这个数据的一个操作的时候
+     // 过去很难处理的地方
+     function some_event_handler(){
+         function show_user_info(user_info){
+             //操作用户信息数据
+             ...
+         }
+         function fail_callback(){
+             // 处理错误
+         }
+         // 如果数据已加载完毕，直接操作
+         if(global.deferred_user_info.status == 'loaded'){
+             show_user_info(global.user_info);
+         }
+         else if(global.deferred_user_info.status == 'failed'){
+             fail_callback();
+         }
+         // 否则，增加一个回调函数。
+         else{
+             global.deferred_user_info.addCallBacks(show_user_info);
+         }
+     }
