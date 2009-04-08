@@ -30,6 +30,12 @@ def traverse(env):
     graph, size, target = env
     visit_queue = [(0,0)]
     visited = {}
+
+    def test_pos(pos):
+        x, y = pos
+        M,N = size
+        return pos not in visited and M>x>=0 and N>y>=0 and graph[x][y]==0
+
     while visit_queue:
         #print 'visit_queue', visit_queue
         pos = visit_queue.pop(0)
@@ -37,12 +43,6 @@ def traverse(env):
         #print 'visited', pos
         if pos==target:
             return True
-
-        def test_pos(pos):
-            x, y = pos
-            M,N = size
-            return pos not in visited and M>x>=0 and N>y>=0 and graph[x][y]==0
-
         next_poses = filter(test_pos, get_next_poses(pos))
         visit_queue = next_poses+visit_queue
     return False
