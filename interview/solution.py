@@ -43,7 +43,7 @@ Tower Defense (Stage I)
 
 ::
 
-    $ solution.py --help
+    $ ./solution.py -h
     Usage: solution.py [-f] [-o] [-t]
 
     Options:
@@ -53,7 +53,9 @@ Tower Defense (Stage I)
       -o OUTPUT, --output=OUTPUT
                             output file, default stdout
       -t, --test            run doc test
-
+      -l LOGFILENAME, --log=LOGFILENAME
+                            specify log file name, default /tmp/solution.log
+    
 程序可以使用命令行参数指定输入输出文件，默认使用标准输入输出。
 
 可以直接执行程序交互式输入样本数据（注意要输入 Ctrl+D 结束输入）， ::
@@ -76,6 +78,18 @@ Tower Defense (Stage I)
 
 * 传递 -t 或 --test 参数执行文档测试。
 * ./test_solution.py 执行单元测试。
+
+ChangeLog
+==========
+
+version 1.1 (2009年 04月 13日 星期一 22:52:19 CST)
+---------------------------------------------------
+
+1. 加入命令行参数
+2. 加入文档测试和单元测试
+3. 加入log
+4. 增加执行模式，可通过参数指定输入输出文件
+
 '''
 import logging
 
@@ -180,7 +194,7 @@ def main(infile, outfile):
 if __name__ == '__main__':
     import sys, optparse
     # 解析命令行输入
-    parser = optparse.OptionParser(usage='%prog [-f] [-o] [-t]', version='%prog 1.0')
+    parser = optparse.OptionParser(usage='%prog [-f] [-o] [-t]', version='%prog 1.1')
     parser.add_option("-f", "--file",
             help="input file, default stdin", default=sys.stdin)
     parser.add_option("-o", "--output",
