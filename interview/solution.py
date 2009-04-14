@@ -54,11 +54,11 @@ Tower Defense (Stage I)
                             output file, default stdout
       -t, --test            run doc test
       -l LOGFILENAME, --log=LOGFILENAME
-                            specify log file name, default /tmp/solution.log
+                            specify log file name, default ./solution.log
     
 程序可以使用命令行参数指定输入输出文件，默认使用标准输入输出。
 
-可以直接执行程序交互式输入样本数据（注意要输入 Ctrl+D 结束输入）， ::
+可以直接执行程序交互式输入样本数据（注意要输入 Ctrl+D(linux) 或者 Ctrl+Z(windows) 结束输入）， ::
 
     $ ./solution.py
     3 4
@@ -89,9 +89,13 @@ version 1.1 (2009年 04月 13日 星期一 22:52:19 CST)
 2. 加入文档测试和单元测试
 3. 加入log
 4. 增加执行模式，可通过参数指定输入输出文件
+5. 增加对输入的错误检查
 
 '''
 import logging
+
+class TowerDefenseException(BaseException):
+    pass
 
 def get_input(infile):
     '''
@@ -124,6 +128,8 @@ def get_input(infile):
     graph = [[0 for j in range(N)] for i in range(M)]
     for i in range(M):
         flags = it.next().split()
+        if len(flags)<N:
+            raise TowerDefenseException('invalid input format')
         for j in range(N):
             if flags[j]=='*':
                 graph[i][j] = 1
@@ -184,7 +190,10 @@ def main(infile, outfile):
     解决该问题的主函数
     '''
     # 读取问题输入
-    graph, target_position, tower_position = get_input(infile)
+    try:
+        graph, target_position, tower_position = get_input(infile)
+    except StopIteration, ex:
+        raise TowerDefenseException('invalid input format')
     logging.info('parsed input graph:'+str(graph))
     # 深度优先遍历地图
     connected = traverse(graph, (len(graph), len(graph[0])), (0, 0), target_position)
@@ -202,7 +211,7 @@ if __name__ == '__main__':
     parser.add_option("-t", "--test", action="store_true", dest="test",
             help="run doc test")
     parser.add_option("-l", "--log", dest="logfilename",
-            help="specify log file name, default /tmp/solution.log", default="/tmp/solution.log")
+            help="specify log file name, default ./solution.log", default="./solution.log")
     (options, args) = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG,
@@ -224,4 +233,9 @@ if __name__ == '__main__':
                 outfile = open(outfile, 'w')
         except IOError, ex: # 打开文件失败
             print ex
-        main(infile, outfile)
+        try:
+            main(infile, outfile)
+        except TowerDefenseException, ex:
+            print ex
+        infile.close()
+        outfile.close()
