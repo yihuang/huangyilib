@@ -87,7 +87,7 @@ version 1.1 (2009年 04月 13日 星期一 22:52:19 CST)
 
 1. 加入命令行参数
 2. 加入文档测试和单元测试
-3. 加入log
+3. log一些调试信息，方便定位问题。
 4. 增加执行模式，可通过参数指定输入输出文件
 5. 增加对输入的错误检查
 
@@ -135,6 +135,8 @@ def get_input(infile):
                 graph[i][j] = 1
     # 建立目标塔楼
     tower_x, tower_y = map(int, it.next().split())
+    if tower_x>=M or tower_y>=N:
+        raise TowerDefenseException('invalid input format')
     graph[tower_x][tower_y] = 1
     return graph, (M-1, N-1), (tower_x, tower_y)
 
