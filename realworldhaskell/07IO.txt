@@ -1,0 +1,934 @@
+第7章 I/O
+
+几乎全部程序都从外部世界收集数据，处理，并把结果返回给外部世界。换句话说，输入和输出是很关键的。
+
+Haskell的I/O系统很强大，表达能力很强。它很容易使用，理解它的使用很重要。Haskell严格的把纯代码与可以作用到现实世界的代码区分开。也就是说它对纯函数的代码提供了完全的副作用隔离。这样不仅让代码更容易验证正确性，也能让编译器自动进行优化和并行。
+
+我们首先从Haskell的简单标准I/O开始。在讨论了如何将I/O与纯的惰性函数式语言相适应后，我们将讨论一些更强大的选择。
+
+Haskell中的经典I/O
+
+我们先来看一个程序，它和其他语言如 C 或 Perl中操作I/O的方式非常像。
+
+-- file: ch07/basicio.hs
+main = do
+       putStrLn "Greetings!  What is your name?"
+       inpStr <- getLine
+       putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!"
+
+可以把这个程序编译成独立可执行文件，或者用runghc执行它，也可以在 ghci中调用它的main函数。这是用 runghc 的例子：
+
+$ runghc basicio.hs
+Greetings!  What is your name?
+John
+Welcome to Haskell, John!
+
+这是很简单明亮的结果。可以看到 putStrLn 输出一个String，后跟一个换行符。getLine从标准输入中读入一行。<- 语法是新的。简单的说，它把执行I/O动作的结果绑定到一个名字上。用列表链接操作符 ++ 来把输入字符串和我们的文本连接起来。
+
+看下 putStrLn 和 getLine的类型。可以从库参考文档中得到这个信息，或者直接问ghci：
+
+ghci> :type putStrLn
+putStrLn :: String -> IO ()
+ghci> :type getLine
+getLine :: IO String
+
+注意这两个类型的返回值里都有IO。因此我们知道他们可能具有副作用，或者调用相同参数时结果可能不通，或者两者都有。putStrLn 的类型看上去像个函数。取一个String类型的参数并返回类型为 IO () 的返回值。到底什么是 IO ()呢？
+
+
+类型为 IO something 的就是一个I/O动作。你可以存储它们，并且什么事都不会发生。可以说 writefoo = putStrLn "foo"，此时不会发生任何事。但是如果之后在另一个 I/O 动作中使用writefoo，当调用父动作的时候，writefoo就会被执行 -- I/O动作可以用更大的 I/O动作胶合在一起。()是一个空的元组（发音为 "unit"），指出从 putStrLn中没有返回值。与 Java或C中的void类似。
+
+[Tip]	Tip
+
+操作可以创建，赋值或传递到任何地方。但是，他们只能从另一个I/O动作中执行。
+
+在ghci中看一下：
+
+ghci> let writefoo = putStrLn "foo"
+ghci> writefoo
+foo
+
+在这个例子里，输出的foo并不是putStrLn的返回值。实际上是putStrLn的副作用把foo写到终端上的。
+
+注意另一件事：ghci实际执行了writefoo。这意味着，给ghci一个I/O动作，它就会立即执行它。
+
+[Note] I/O操作是什么？
+
+动作 (Action)
+
+    * 具有类型 IO t
+
+    * 值是Haskell的一等公民，并与Haskell的类型系统无缝的结合
+
+    * 执行时产生副作用，但求值时不会。也就是说，只有在一个 I/O环境下被其他调用时才会产生副作用。
+
+    * 任何表达式都可以生成一个动作作为返回值，但是这个动作只有在另一个 I/O动作内（或者main）才会被执行。
+
+    * 执行一个类型为 IO t 的动作会执行 I/O操作，并最终产生一个 t 类型的结果。
+
+getLine 的类型可能看上前有些奇怪。它看上去像一个值而不是函数。实际上，可以这么看它：getLine存储了一个I/O动作。当动作执行时，你得到一个String。<-操作符用来把结果从执行的动作中“拉出来”，并存储到一个变量里。
+
+main本身是一个类型为 IO () 的动作。你只能从另一个 I/O动作中执行I/O动作。Haskell程序中所有的 I/O操作都是由main驱动的，那是每个Haskell程序开始执行的地方。这就是Haskell提供的将副作用隔离的机制：在I/O动作中执行I/O操作，并在那里调用纯的(非I/O)函数。大部分Haskell代码是纯的；I/O动作执行I/O操作并调用纯的代码。
+
+do 是定义一系列动作的方便方法。后面会看到，还有其他的方法。当使用do时，缩进很重要；确保将动作恰当的对齐。
+
+只有当多于一个动作需要执行时裁需要使用 do。do程序块的值是执行的最后一个动作的值。在“剖析do程序块”一节有do语法的完整解释。
+
+看一个在I/O动作中调用纯代码的例子：
+
+-- file: ch07/callingpure.hs
+name2reply :: String -> String
+name2reply name =
+    "Pleased to meet you, " ++ name ++ ".\n" ++
+    "Your name contains " ++ charcount ++ " characters."
+    where charcount = show (length name)
+
+main :: IO ()
+main = do
+       putStrLn "Greetings once again.  What is your name?"
+       inpStr <- getLine
+       let outStr = name2reply inpStr
+       putStrLn outStr
+
+注意这个例子中的 name2reply 函数。它是一个普通的 Haskell 函数，遵从所有我们已经说过的规则：当给出相同输入时总是得到相同返回结果，没有副作用，惰性执行。它使用了其他的Haskell函数： (++), show, 和 length。
+
+到下面的main，把 name2reply inpStr 的值绑定到 outStr。在do程序块中时，用 <- 获得IO动作的返回值，用 let 获得纯代码的返回值。在do程序块中使用时，不能把 in 放在let语句后面。
+
+可以从这里看到如何从键盘上读取一个人的名字。然后把数据传递给一个纯函数，再将其结果打印输出。实际上，main的最后两行可以用 putStrLn (name2reply inpStr) 替换。这样尽管main 具有副作用(它让终端上出现了一些字符)，而name2reply 没有并且不能有副作用。因为name2reply是纯函数，不是一个动作。
+
+这ghci中试一下：
+
+ghci> :load callingpure.hs
+[1 of 1] Compiling Main             ( callingpure.hs, interpreted )
+Ok, modules loaded: Main.
+ghci> name2reply "John"
+"Pleased to meet you, John.\nYour name contains 4 characters."
+ghci> putStrLn (name2reply "John")
+Pleased to meet you, John.
+Your name contains 4 characters.
+
+字符串中的\n 是换行符，让终端输出时开始一个新行。直接这ghci中调用  name2reply "John"会在字面上显式 \n ，因为它用show来显式返回值。但是使用putStrLn 来显式到终端时，终端会把 \n 翻译成开始新行。
+
+如果直接在ghci中键入main 会发生什么呢？试一下。
+
+看过这些例子程序，你可能会好奇Haskell是否是命令式的而不是纯的、惰性函数式的。这些例子看上去好像是一系列动作顺序执行。然而还有其他的含义。我们将在本章"Haskell真的是命令式的么？"和"惰性I/O"两节中讨论这个问题。
+
+
+Pure vs. I/O
+
+为帮助理解纯代码和I/O，给出一个对比表。当说纯代码时，指的是对相同输入返回相同结果，并且没有副作用的Haskell函数。在Haskell里，只有I/O动作不适用这些规则。
+
+
+Table 7.1. Pure vs. Impure
+Pure	Impure
+纯  非纯
+给定相同参数总是返回相同值
+对相同参数可能返回不通值
+永远没有副作用
+可以有副作用
+用于不改变状态
+可以改变程序，系统或外界的全局状态
+
+为什么函数纯粹型重要
+
+这一节将讨论为什么Haskell要把纯代码与 I/O动作清楚的区分开。大多数语言并不做这种区分。在像 C 或 Java这样的语言里，并没有编译器保证一个函数对相同参数返回相同的值，或者保证一个函数永远没有副作用。知道一个函数是否有副作用唯一的办法是读它的文档，并希望它是准确的。
+
+程序中很多bug是出乎意料的副作用导致的。而更多是因为一个函数对相同输入给出不同返回造成的误解。随着多线程和其他形式的并行变得越来越平常，要管理全局的副作用变得更加困难了。
+
+Haskell把副作用隔离进I/O动作的方法提供了一个清楚的边界。你总是可以知道系统的哪一部分会改变状态，哪些不会。你总是可以确信程序的纯代码部分没有出人意料的结果。这可以帮你理解程序。同样可以帮助编译器。例如最近版本的ghc可以对纯代码部分提供一定程度的自动并行--计算中的圣杯。
+
+对这个主题的更多讨论，见 “惰性I/O的副作用”一节。
+
+操作文件和句柄
+
+现在已经看到了如何与用户通过计算机终端进行交互。当然，你经常需要操作特定的文件。也很容易做。
+
+Haskell为I/O定义了很多基本的函数，他们中很多与其他编程语言中类似。System.IO 的库参考文档提供了所有基本I/O函数的概括，
+？？
+functions, should you need one that we aren't touching upon here. 2 comments
+
+一般用 openFile 开始，这会得到一个文件句柄。之后可以用这个句柄对那个文件进行特定操作。Haskell提供了诸如hPutStrLn 这样的函数，它像putStrLn那样工作，不过取一个附加的句柄参数，它指定要操作的文件。操作完用 hClose来关闭句柄。这些函数都定义在  System.IO 中，因此要操作文件需要先导入这个模块。差不多所有非"h"开头的函数都有与之相对的 "h"开头的函数；例如有一个 print 用来向屏幕输出，而hPrint向文件输出。
+
+让我们开始用命令式的方式来读写文件。这和其他语言里面的while循环有些类似。这并不是Haskell里最好的写法；后面将会看到更多Haskell风格的方法。
+
+-- file: ch07/toupper-imp.hs
+import System.IO
+import Data.Char(toUpper)
+
+main :: IO ()
+main = do 
+       inh <- openFile "input.txt" ReadMode
+       outh <- openFile "output.txt" WriteMode
+       mainloop inh outh
+       hClose inh
+       hClose outh
+
+mainloop :: Handle -> Handle -> IO ()
+mainloop inh outh = 
+    do ineof <- hIsEOF inh
+       if ineof
+           then return ()
+           else do inpStr <- hGetLine inh
+                   hPutStrLn outh (map toUpper inpStr)
+                   mainloop inh outh
+
+像所有的Haskell程序一样，这个程序从main开始执行。打开两个文件：input.txt 打开为读取，output.txt 打开为写入。之后调用mainloop来处理文件。
+
+mainloop首先检查是否在输入文件的结尾（EOF）。如果不是就从输入中读入一行。把它转成大写后写入到输出文件。之后递归的调用mainloop继续处理文件。
+
+注意return的调用。这与C或Python中的return并不相同。在这些语言里，return用来立即中止当前函数的执行，并把值返回给调用者。在Haskell里，return与 <- 相对。也就是说return把一个纯的值包装到IO中。因为每一个I/O动作必须返回IO类型，如果你的结果来自纯的计算，必须把它包装成IO返回。作为例子，入7是Int，return 7将会创建一个包含一个值的动作，类型为 IO Int。当执行时，这个动作将会产生结果7.对return更详细的细节，看“return的真实本性”一节。
+
+我们试着运行下这个程序。我们有一个 input.txt 文件，内容如下：
+
+This is ch08/input.txt
+
+Test Input
+I like Haskell
+Haskell is great
+I/O is fun
+
+123456789
+    
+现在可以使用 runghc  toupper-imp.hs ，在目录中会找到 output.txt 文件。像下面这样：
+
+THIS IS CH08/INPUT.TXT
+
+TEST INPUT
+I LIKE HASKELL
+HASKELL IS GREAT
+I/O IS FUN
+
+123456789
+    
+
+openFile详解
+
+用ghci来检查下 openFile的类型：
+
+ghci> :module System.IO
+ghci> :type openFile
+openFile :: FilePath -> IOMode -> IO Handle
+
+FilePath 只是String的另一个名字。它在I/O函数中使用是为了帮助明确参数被用作文件名，而不是常规的数据。
+
+IOMode指定文件如何管理。IOMode可能的取值列在表 7-2 中。
+
+
+IOMode的取值
+
+IOMode	Can read?	Can write?	Starting position	Notes
+IOMode    可读？     可写？       开始位置   附注
+
+ReadMode	Yes	No	文件开头    文件必须已经存在
+WriteMode	No	Yes	文件开头	文件如果已经存在将会完全清空
+ReadWriteMode	Yes	Yes	文件开头	如果文件不存在将会创建；否则已经存在的数据不会动
+AppendMode	No	Yes	文件结尾	文件如果不存在将会创建；否则已经存在的数据不会动
+
+虽然本章大部分例子处理文本文件，但是Haskell也是可以处理二进制文件的。如果要处理二进制文件，就要用 openBinaryFile 代替 openFile。把文件当作二进制打开与作为文本打开，在Windows上处理时会不同。在Linux一类的操作系统上， openFile 和 openBinaryFile执行相同的操作。无论如何出于移植性的考虑，处理二进制文件时总是用openBinaryFile是明智的。
+
+关闭句柄
+
+你已经看到hClose用来关闭文件句柄。我们来花点时间考虑下为什么这很重要。
+
+在“缓冲”一节将会看到，Haskell为文件维护内部缓冲。这提供了很重要的性能提升。但是，它意味着直到你对写入打开的文件调用hClose，数据才会被真正写到操作系统上。
+
+要确保对文件调用hClose的另一个原因是它会占用系统资源。如果你的程序执行很长时间，并且打开了很多文件但是没能关闭他们，你的程序很可能因为资源耗尽而崩溃。这一点上Haskell与其他语言没什么区别。
+
+当程序退出时，Haskell一般会把仍然打开的文件关闭。然而有些情况下这不会发生，因此再次提示，最好即使调用hClose。
+
+Haskell提供了一些工具，不论是否有错误发生都可以容易的保证文件关闭。你可以在“扩展实例：函数式I/O和临时文件”一节阅读关于finally，以及“获取使用释放循环”一节的bracket。
+
+Seek 和 Tell
+
+当用Handle从磁盘上读写一个对应的文件时，操作系统维护一个当前位置的内部记录。每当进行了另一次读取后，操作系统会返回从当前位置开始的下一块数据，并把位置相应的增加以反应读取的数据。
+
+可以用hTell获得文件当前的位置。当文件初始建立时，它是空的，位置为0。写入了5个字节后，它的位置为5，等等。hTell取一个句柄做参数，返回一个 IO Integer 表示位置。
+
+与hTell相伴的是hSeek。hSeek可以改变文件的位置。它取三个参数：句柄，SeekMode, 位置。
+
+SeekMode可以取三个不同的值之一，它指定了如何解释给定的位置。AbsoluteSeek 意思是给定的位置是文件中的精确位置。这与hTell给出的信息是一类的。RelativeSeek 意思是从当前位置开始寻找。一个正数的请求将在文件中向前搜寻，而负数意味着向后找。最后SeekFromEnd将从文件末尾向前找指定数量的字节。 hSeek handle SeekFromEnd 0 将把你带到文件的末尾。“扩展实例：函数式I/O和临时文件”一节有一个hSeek的例子。
+
+并不是所有的句柄都是可以定位的。句柄经常指向文件，但是它也能够指向其他的东西例如网络连接，磁带驱动器，或者终端。可以用hIsSeekable 来检查一个给定的句柄是否可以定位。
+
+标准输入，标准输出，标准错误
+之前我们支持对每一个非"h"的函数，通常有一个相对的 "h"函数来处理任何句柄。实际上，非"h"的函数只不过是他们的"h"函数的快捷方式而已。
+
+在System.IO中有三个预定义的句柄。这些句柄总是可用的。它们是标准输入 stdin ；标准输出 stdout； 和标准错误 stderr。标准输入一般指键盘，标准输出指显示器，标准错误一般也指向显示器。
+
+像getLine这样的函数可以简单的定义如下：
+
+getLine = hGetLine stdin
+putStrLn = hPutStrLn stdout
+print = hPrint stdout
+
+
+[Tip]	Tip
+
+这里使用了部分应用。如果不清楚，回顾下“部分函数应用和柯里化”一节。
+
+之前我们说的是三个标准文件句柄“通常”指向什么。那是因为一些操作系统运行你把文件的输入输出句柄重定向到不同的地方--文件，设备，甚至其他程序上。这个特性在POSIX系统（Linux,BSD, Mac）的shell脚本上用得很广泛，也可以用在Windows上。
+
+用标准输入输出代替指定文件经常是有用的。这可以通过终端与人进行交换。但它也可以使你输入输出文件－－甚至把你的代码与其他程序组合起来－－按你要求的那样。
+
+作为示例，可以这样给 callingpure.hs 提供输入：
+
+$ echo John|runghc callingpure.hs
+Greetings once again.  What is your name?
+Pleased to meet you, John.
+Your name contains 4 characters.
+      
+
+当callingpure.hs 执行时，它将不等待键盘输入而是从 echo 程序接收到 John。同时注意不像用键盘时那样，输出中没有单独John的那一行。终端把你键入的内容回显给你，但这是通过程序的输入，不会包括在输出流里。
+
+删除和重命名文件
+
+本章到目前为止，已经讨论了关于文件的内容。现在让我们讨论下关于文件本身。
+
+
+System.Directory 提供了两个有用的函数。removeFile取一个单独的参数，文件名，并删除这个文件。renameFile取两个文件名参数：第一个是旧的名字，第二个是新名字。如果新的文件名在不同的目录，你也可以把这想成是移动。调用renameFile前旧文件名必须已经存在。如果新的文件已经存在了，会首先删除它，然后再进行改名。
+
+像其他取文件名做参数的函数一样，如果“旧”的名字不存在，renameFile将会抛出异常。第19章《错误处理》将会介绍更多异常处理的信息。
+
+ System.Directory中还有很多函数用来进行创建和删除目录，这目录中寻找文件列表，测试文件是否存在。这“目录和文件信息”一节将会讨论这些。
+
+临时文件
+
+程序员经常需要临时文件。这些文件可以存储计算需要的大量数据，或者其他程序或用户使用的数据。
+
+虽然你可以手工的用独特名字打开文件，但是在不同的平台上要安全的做到这一点有些细节差异。Haskell提供了一个方便的函数叫 openTempFile （和相应的openBinaryTempFile），它可以帮你处理难点。
+
+	
+openTempFile 需要两个参数：要创建文件的目录，命名文件的“模板”。目录可以简单地用 "."表示当前的工作目录。或者可以使用System.Directory.getTemporaryDirectory找到某台机器上的临时目录。模板作为文件名的基础；还有一些随机字符添加上去，以确保结果是真正独一无二的。实事上，它保证将工作在一个独有的文件名上。
+
+openTempFile 的返回类型是  IO (FilePath, Handle)。元组的第一部分是创建文件的名称，第二部分是打开为ReadWriteMode 的文件的句柄。当用完文件后，要用 hClose 关闭它，并调用 removeFile 删除。下面是一个例子。
+
+扩展实例：函数式I/O和临时文件
+
+这里有一个较大的例子，它把本章和之前章节的一些概念，以及一些还没有见过的概念合在一起。看下这个程序，看看能否看出它的工作方式。
+
+-- file: ch07/tempfile.hs
+import System.IO
+import System.Directory(getTemporaryDirectory, removeFile)
+import System.IO.Error(catch)
+import Control.Exception(finally)
+
+-- 主程序开始点。在myAction中使用临时文件
+main :: IO ()
+main = withTempFile "mytemp.txt" myAction
+
+{- 
+程序的核心。用路径和临时文件的句柄调用。
+当函数退出，文件将会关闭并删除，因为 myAction 是从 withTempFile 中调用的。
+-}
+
+myAction :: FilePath -> Handle -> IO ()
+myAction tempname temph = 
+    do -- 在终端上显示欢迎词
+       putStrLn "Welcome to tempfile.hs"
+       putStrLn $ "I have a temporary file at " ++ tempname
+
+       -- 看下初始位置
+       pos <- hTell temph
+       putStrLn $ "My initial position is " ++ show pos
+
+       -- 向临时文件中写入一些数据
+       let tempdata = show [1..10]
+       putStrLn $ "Writing one line containing " ++ 
+                  show (length tempdata) ++ " bytes: " ++
+                  tempdata
+       hPutStrLn temph tempdata
+
+       -- 获得新的位置。这并不实际改变内存中的位置，
+       -- 但是它让 "pos"为 "do" 程序块剩下的部分指向一个不同的值。
+
+       pos <- hTell temph
+       putStrLn $ "After writing, my new position is " ++ show pos
+
+       -- 转到文件开始并显示
+       putStrLn $ "The file content is: "
+       hSeek temph AbsoluteSeek 0
+
+       -- hGetContents 惰性读取整个文件
+       c <- hGetContents temph
+
+       -- 把文件一个字节一个字节输出，后跟 \n
+       putStrLn c
+
+       -- 用 Haskell 字面显示
+       putStrLn $ "Which could be expressed as this Haskell literal:"
+       print c
+
+
+{-
+这个函数需要两个参数：文件名的模式和另一个函数。这将创建一个临时文件，并把文件名和句柄传递给那个函数。
+
+临时文件用openTempFile 创建。目录是getTemporaryDirectory 所指定的，如果系统没有临时目录概念，则用 "." 。
+给定的模式传递给 openTempFile。
+
+给定函数中止，即使因为异常而中止，文件句柄都会关闭，并删除文件。
+-}
+
+withTempFile :: String -> (FilePath -> Handle -> IO a) -> IO a
+withTempFile pattern func =
+	
+    do -- The library ref says that getTemporaryDirectory may raise on
+       -- exception on systems that have no notion of a temporary directory.
+       -- So, we run getTemporaryDirectory under catch.  catch takes
+       -- two functions: one to run, and a different one to run if the
+       -- first raised an exception.  If getTemporaryDirectory raised an
+       -- exception, just use "." (the current working directory).
+库参考说如果系统没有临时目录概念的话，getTemporaryDirectory 将会抛出异常。
+因此我们在 catch 下执行 getTemporaryDirectory。catch 需要两个函数：一个运行，另一个在第一个函数抛出异常时执行。如果getTemporaryDirectory抛出了异常，就使用"." 
+
+       tempdir <- catch (getTemporaryDirectory) (\_ -> return ".")
+       (tempfile, temph) <- openTempFile tempdir pattern 
+
+
+
+	-- 调用  (func tempfile temph) 在临时文件上进行操作。 finally 需要两个动作。第一个是用来执行的。
+	-- 第二个是在第一个动作之后执行的，无论第一个是否抛出了异常。
+	-- 这样，我们就能确保临时文件总是被删除。finally 的返回值是第一个操作的返回值。
+
+       finally (func tempfile temph) 
+               (do hClose temph
+                   removeFile tempfile)
+
+
+
+让我们看下程序的结尾。withTempFile函数表明Haskell引入I/O时没有忘记它的函数式本质。这个函数取一个String和另一个函数做参数。传入withTempFile的函数用临时文件的名字和句柄调用。当那个函数退出时，临时文件被关闭并删除。因此即使在处理I/O时，我们依然能够看到传递函数作为参数的用法。Lisp程序员可能会发现我们的withTempFile 函数类似于Lisp里的 with-open-file 函数。
+
+有一些异常处理可以让程序面对错误时更加健壮。你通常需要在处理完成后把临时文件删除，即使发生了错误。因此我们确定它会发生。异常处理更多信息见第19章《错误处理》。
+
+回到程序的开始，main的定义只是简单的 withTempFile "mytemp.txt" myAction 。 之后将用临时文件的名字和句柄来调用 myAction。
+
+
+myAction在终端上显示一些信息，向文件中写入一些数据，移动到文件开头并用 hGetContents 读回数据。之后它把文件内容一个字节一个字节的显示出来。之后通过 print c 来按Haskell的字面显示输出，与 putStrLn (show c) 相同。
+
+让我们来看看输出：
+		
+$ runhaskell tempfile.hs
+Welcome to tempfile.hs
+I have a temporary file at /tmp/mytemp8572.txt
+My initial position is 0
+Writing one line containing 22 bytes: [1,2,3,4,5,6,7,8,9,10]
+After writing, my new position is 23
+The file content is:
+[1,2,3,4,5,6,7,8,9,10]
+
+Which could be expressed as this Haskell literal:
+"[1,2,3,4,5,6,7,8,9,10]\n"
+    
+
+
+
+每次运行此程序，临时文件名会稍有不同，因为它包含一个随机生成的部分。看这些输出，可能会遇到一些问题：
+
+    1 。为什么写入了22个字节后，位置是23？
+
+    2 。为什么显示文件内容后有一个空行？
+
+    3 。为什么在Haskell字面显示的末尾有一个 \n
+
+你可能猜到三个问题的答案都是相关的。自己先想一会，看看能否找出答案。如果需要些帮助，这里有些解释：
+
+    1 。因为我们用 hPutStrLn 而不是 hPutStr 写入数据。hPutStrLn 总是在行末尾添加 \n，这在tempdata 里并没有。
+
+    2 。用 putStrLn c  来显示文件内容 c  。因为数据原来是用 hPutStrLn 写入的， c 的结尾就是换行符，putStrLn 给他的末尾又加了第二个换行符。结果显示出了一个空白行。
+
+   3. \n 是原来从原来的hPutStrLn输出的换行符。
+
+最后说明下，在不同的操作系统上字节数计数可能不同。例如在Windows上使用\r\n的双子节序列作为行尾标记，因此在不同的平台上可能看上去步一样。
+
+
+惰性I/O
+
+这一章目前位置，你看到的例子都是很传统的 I/O。每一行或数据块都要求是独立的，并需要单独的处理。
+
+Haskell还提供了另一种方式。因为Haskell是惰性语言，这意味着只有必须知道某块数据的值时才会求值，有一些处理I/O的新方法。
+
+
+hGetContents
+
+一个处理I/O的新方法是hGetContents函数。hGetContents 的类型是   Handle -> IO String。返回的 String 表示句柄给定文件中的全部数据。
+
+在严格执求值语言里，用这样的函数往往是个坏主意。读取一个2KB文件的全部内容是可以的，但如果尝试读取500GB文件的全部内容，将可能因为不够内存存放数据而崩溃。在这些语言中，需要用传统的机制如循环来处理文件的全部内容。
+
+
+但是hGetContents是不同的。它返回的String是惰性求值的。在调用hGetContents 时不会进行实际读取。只有当列表的元素（字符）被处理时才会从句柄中读取数据。当String中的元素不在使用时，Haskell的垃圾收集器自动释放它的内存。这些都是透明的。它看上去像－并且实际上就是－一个纯的String，因此你可以把它传递给纯的代码（没有IO）。
+
+
+让我们看一个例子。前一节“处理文件和句柄”有一个命令式的程序，把文件的全部内容转换成大写。它的命令式算法与其他很多语言中见到的类似。这里时用惰性求值的简单的多的算法：
+
+-- file: ch07/toupper-lazy1.hs
+import System.IO
+import Data.Char(toUpper)
+
+main :: IO ()
+main = do 
+       inh <- openFile "input.txt" ReadMode
+       outh <- openFile "output.txt" WriteMode
+       inpStr <- hGetContents inh
+       let result = processData inpStr
+       hPutStr outh result
+       hClose inh
+       hClose outh
+
+processData :: String -> String
+processData = map toUpper
+
+
+注意hGetContents为我们处理所有的读取。此外，注意下processData。它是一个纯函数，因为它没有副作用，并且每次调用对相同参数总返回相同结果。它不需要－也没办法－知道它的输入是文件中惰性读取的。不管20个字符的字符串还是磁盘上存的500GB的数据，它都可以完美的处理。
+
+可以用ghci来确认这一点：
+
+ghci> :load toupper-lazy1.hs
+[1 of 1] Compiling Main             ( toupper-lazy1.hs, interpreted )
+Ok, modules loaded: Main.
+ghci> processData "Hello, there!  How are you?"
+"HELLO, THERE!  HOW ARE YOU?"
+ghci> :type processData
+processData :: String -> String
+ghci> :type processData "Hello!"
+processData "Hello!" :: String
+
+[Warning]	Warning
+
+
+如果在上面的例子里，尝试把inpStr保留到使用之后（调用 processData），程序将会损失内存使用效率。这是因为编译器必须把inpStr 的值保留在内存中，已备后面使用之需。这里知道 inpStr 永远不会再用了，因此用完它后立刻就释放了。只要记住：内存只有在最后一次使用后被释放。
+
+
+这个程序有点冗长，以清楚看到使用了纯代码。这里有个更简洁的版本，接下来将以这个例子为基础。
+		
+
+
+-- file: ch07/toupper-lazy2.hs
+import System.IO
+import Data.Char(toUpper)
+
+main = do 
+       inh <- openFile "input.txt" ReadMode
+       outh <- openFile "output.txt" WriteMode
+       inpStr <- hGetContents inh
+       hPutStr outh (map toUpper inpStr)
+       hClose inh
+       hClose outh
+
+
+在使用hGetContents时不必处理输入文件的全部数据。当Haskell系统判定hGetContents返回的整个字符串可以被垃圾回收时－意味着再也不会被用到－它将会为你自动关闭文件。同样的原则也适用于从文件中读取数据。当一段数据再也不需要时，Haskell环境将会释放存储它的内存。严格地说在这个例子里根本不用调用hClose。然而，添加上它在实践中依然有好处，因为将来对程序的修改会使调用hClose变得重要。
+
+
+[警告]警告
+
+当使用hGetContents时，有一点很重要：即使在后面的程序中不再显式的直接引用句柄，也必须等到处理完 hGetContents 的结果后再关闭这个句柄。如果提前关闭可能会导致丢失文件的部分或者全部数据。因为Haskell是惰性的，你通常可以假设，你输出了多少计算结果，就有多少计算涉及的输入被读取。 
+
+readFile和writeFile
+
+Haskell程序员经常把hGetContents用作过滤器。他们从一个文件读取数据，对数据进行一些处理，把结果写出到其他地方。因为这非常常见因此有一些快捷方式。readFile 和 writeFile 是把文件当作字符串处理的快捷方式。它们处理打开文件，关闭文件，读和写数据的所有细节。readFile内部使用hGetContents。
+
+你能猜出这些函数的类型么？我们用ghci来看看：
+		
+
+ghci> :type readFile
+readFile :: FilePath -> IO String
+ghci> :type writeFile
+writeFile :: FilePath -> String -> IO ()
+
+这里是一个使用readFile和writeFile的例子程序：
+
+-- file: ch07/toupper-lazy3.hs
+import Data.Char(toUpper)
+
+main = do 
+       inpStr <- readFile "input.txt"
+       writeFile "output.txt" (map toUpper inpStr)
+
+看，程序的核心只有两行！readFile 返回一个惰性String，我们把它存储在 inpStr里。然后处理它，并传给 writeFile 写出。
+
+readFile和writeFile都没有给你提供可以操作的的句柄，因此就不需要手动 hClose。readFile内部使用hGetContents，当返回的String被垃圾回收，或者所有的输入都读取完了之后，隐藏的句柄将会被关闭。writeFile将会在提供的所有String都写出后关闭隐藏的句柄。
+
+关于惰性输出
+
+
+现在你应该懂得在Haskell中如何进行惰性输入。但是惰性输出呢？
+
+
+如你所知，在Haskell中值不需要前任何东西都不会被求值。因为像writeFile 和putStr这样的函数把传入的整个字符串写出，因此整个字符串都必须求值。因此可以保证putStr的参数将会完全求值。
+
+
+但是惰性输入的意思是什么呢？在上面的例子里，调用putStr或writeFile是否会强制立刻将整个字符串载入内存中？
+
+
+
+答案是否定的。 putStr（和所有类似的输出函数）将可用的数据写出。 它们也没有必要保留已经写出的数据，只要程序中没有其他部分需要这些数据，它们的内存就会立刻被释放。某种意义上讲，你可以把readFile和writeFile 间的字符串相像成连接两者的管道。数据从一端，经过一些变形，流向另一端。
+
+你可以给 toupper-lazy3.hs 生成一个大的 input.txt，来自己验证这一点。这会需要一点时间来处理，但是在它处理时你会看到一个不变－并且很低－的内存使用。
+
+interact
+
+
+你知道，readFile 和 writeFile 处理读取文件，进行转换，写到另一个文件这种一般的情况。还有比这更常见的一种的情况：从标准输入读入，进行转换，将结果写到标准输出。对于这种情况，有一个叫 interact 的函数。interact的类型是 (String -> String) -> IO ()。即取一个类型为 String -> String 的函数作为参数。将 getContents 的结果传入这个函数，也就是说，惰性的读入标准输入。这个函数的结果发送到标准输出。
+
+我们可以把我们的例子程序转换成用interact操作标准输入输出。可以如下来做：
+
+-- file: ch07/toupper-lazy4.hs
+import Data.Char(toUpper)
+
+main = interact (map toUpper)
+
+
+看，我们用一行代码完成了转换！要得到之前例子相同的效果，可以这样来执行：
+
+$ runghc toupper-lazy4.hs < input.txt > output.txt
+      
+
+
+或者，如果想在屏幕上看到输出，可以这样：
+
+$ runghc toupper-lazy4.hs < input.txt
+      
+
+
+如果你想看到Haskell一得到输入立刻就输出的话，执行 runghc toupper-lazy4.hs ，不要带其他命令行参数。可以看到每输入一个字符，它就用大写形式回显它。缓冲模式可能会改变这种行为，关于缓冲的更多信息参见本章后面的“缓冲”一节。如果在输入一行结束时回显，或者一时并不显示，那就是缓冲造成的。
+
+也可以用 interact 来写简单的交互程序。我们用一个简单的例子开始：把一行文本添加到大写的输出前。
+
+-- file: ch07/toupper-lazy5.hs
+import Data.Char(toUpper)
+
+main = interact (map toUpper . (++) "Your data, in uppercase, is:\n\n")
+
+
+[Tip]	Tip
+
+
+如果对 . 操作符的使用感到迷惑，不妨参考下“通过函数组合重用代码”一节。
+
+这里我们在输出的开头添加了一个字符串。可以看出这里的问题么？
+
+
+因为我们对 (++) 的结果调用 map，因此它的头部也会变成大写的。可以用下面的方法来修正：
+
+-- file: ch07/toupper-lazy6.hs
+import Data.Char(toUpper)
+
+main = interact ((++) "Your data, in uppercase, is:\n\n" . 
+                 map toUpper)
+
+
+它把头部移到了map 的外面。
+
+用 interact 做过滤器
+
+
+interact也常常用作过滤。假设你要写一个程序，它读入一个文件，并将包含字母"a"的每一行打印出来。这是用 interact 的方法：
+
+-- file: ch07/filter.hs
+main = interact (unlines . filter (elem 'a') . lines)
+
+
+这里引出了三个还不熟悉的函数。我们在ghci中看下它们的类型：
+
+ghci> :type lines
+lines :: String -> [String]
+ghci> :type unlines
+unlines :: [String] -> String
+ghci> :type elem
+elem :: (Eq a) => a -> [a] -> Bool
+
+你能只通过它们的类型猜出这些函数是做什么的么？如果没有的话，可以从“热身：可移植的文本行切分”一节以及“特殊的字符串处理函数”一节中找到解释。经常可以看到I/O操作时使用 lines 和 unlines 函数。最后，elem 取一个元素和一个列表，如果这个元素出现在列表中的话就返回True。
+
+用我们的标准例子输入来运行它：
+
+  $ runghc filter.hs < input.txt
+  I like Haskell
+  Haskell is great
+        
+
+
+果然，你得到了包含 "a"的两行。惰性过滤器是Haskell中强大的处理方式。可以想想看，一个过滤器，如标准的Unix grep程序，听上去很想一个函数。它获取一些输入，应用一些计算，产生可以预测的输出。
+
+IO Monad
+
+你已经看到了在 Haskell 中这样进行 I/O处理的很多例子。我们花点时间退一步考虑下，I/O如何与Haskell语言关联。
+
+因为Haskell是一种纯函数的语言，每次用相同的参数调用一个函数它都会返回相同的结果。此外，函数也不会改变程序的全局状态。
+
+
+您可能想知道，I/O如何适应这种情况。很显然，如果从键盘上读入一行输入，读取输入的函数不可能每次返回相同的结果，对不对？此外，I/O就是用来改变状态的。I/O可以让终端上的像素点亮，可以让打印机输出，甚至可以让一个包裹从仓库发往不同的大陆。I/O不止是改变程序的状态。你可以相像成I/O改变世界的状态。
+
+动作
+
+大多数语言并不区分纯函数和非纯函数。Haskell有数学意义上的函数：它们是纯粹的计算，不能改变任何外部的事物。此外，计算可以在任何时间执行，或者如结果永远没有用到，就不计算。
+
+显然，我们需要些其他的工具来操作I/O。这些工具在Haskell中称为动作。动作类似于函数。它们定义时不做任何事，当被调用时执行一些任务。I/O动作用 IO monad 定义。Monad是一种把函数串接起来的强大方法，将在第14章Monad 中介绍。不需要理解monad就可以理解I/O。只要理解动作的结果类型打上了 IO "标签"。我们来看一些类型：
+
+ghci> :type putStrLn
+putStrLn :: String -> IO ()
+ghci> :type getLine
+getLine :: IO String
+
+
+putStrLn 的类型就像其他的函数一样。这个函数取一个参数并返回一个 IO () 。 这的 IO () 是一个动作。如果需要可以在纯代码中存储或传递动作，虽然这并不常见。动作在调用前什么都不做。来看一个例子：
+
+-- file: ch07/actions.hs
+str2action :: String -> IO ()
+str2action input = putStrLn ("Data: " ++ input)
+
+list2actions :: [String] -> [IO ()]
+list2actions = map str2action
+
+numbers :: [Int]
+numbers = [1..10]
+
+strings :: [String]
+strings = map show numbers
+
+actions :: [IO ()]
+actions = list2actions strings
+
+printitall :: IO ()
+printitall = runall actions
+
+-- Take a list of actions, and execute each of them in turn.
+runall :: [IO ()] -> IO ()
+runall [] = return ()
+runall (firstelem:remainingelems) = 
+    do firstelem
+       runall remainingelems
+
+main = do str2action "Start of the program"
+          printitall
+          str2action "Done!"
+
+str2action 函数取一个参数，并返回一个 IO ()。可以在main 的末尾看到，可以直接在另一个动作中调用它，它将立刻输出一行。或者，可以在纯代码中存储但不执行它。可以在 list2actions 中看到这样的例子，在 str2action 上使用 map ，返回一个动作的列表，就像对其他的纯的数据操作一样。可以看到 printitall 完全使用纯函数构造的。
+
+
+虽然定义了 printitall，但它并不执行，直到它的动作在其他地方被求值。注意在main中我们把 str2action当作 I/O动作来执行，但是之前我们在I/O monad外面使用它并将结果组装到一个列表中。
+
+可以这样来考虑：do 程序块中的每一个语句（除了 let）都必须产生一个I/O 动作来执行。
+
+调用printitall将最终执行所有的动作。实际上，因为Haskell是惰性的，直到此时才会生成那些动作。
+
+当运行这个程序是，输出如下：
+
+Data: Start of the program
+Data: 1
+Data: 2
+Data: 3
+Data: 4
+Data: 5
+Data: 6
+Data: 7
+Data: 8
+Data: 9
+Data: 10
+Data: Done!
+      
+
+实际上可以用更紧凑的方式来写。看下如下修改：
+
+-- file: ch07/actions2.hs
+str2message :: String -> String
+str2message input = "Data: " ++ input
+
+str2action :: String -> IO ()
+str2action = putStrLn . str2message
+
+numbers :: [Int]
+numbers = [1..10]
+
+main = do str2action "Start of the program"
+          mapM_ (str2action . show) numbers
+          str2action "Done!"
+
+注意 str2action 里标准的函数组合操作符的使用。在 main 中有一个 mapM_ 的调用。这个函数类似 map。它取一个函数和一个列表作为输入。提供给mapM_的函数是一个I/O动作，它在列表的每一个项目上执行。 mapM_ 抛出函数的执行结果，也可以用 mapM 来返回 I/O结果的列表。看一下它们的类型：
+
+ghci> :type mapM
+mapM :: (Monad m) => (a -> m b) -> [a] -> m [b]
+ghci> :type mapM_
+mapM_ :: (Monad m) => (a -> m b) -> [a] -> m ()
+
+[Tip]	Tip
+
+这些函数不止应用在I/O上；它们可以应用在任意的Monad上。现在，每当看到"M"，只要想"IO"。另外，以下划线结尾的函数一般将它们的结果抛弃掉。
+
+为什么有了map了还要有mapM？因为map是纯函数，它返回一个列表。它不能直接执行动作。mapM是IO monad中的工具，它可以直接执行动作。
+
+回到main，mapM_ 在numbers的每一个元素上调用 (str2action . show) 。show把每一个数字转换成字符串，str2action把每一个字符串转换成一个动作。mapM_把这些单独的动作合并成一个打的动作，并打印出来。
+
+顺序
+
+do语句块是把动作连接起来的缩写方式。有两个操作符可以用来代替 do 语句块： >> 和 >>=。在ghci中看下它们的类型：
+
+ghci> :type (>>)
+(>>) :: (Monad m) => m a -> m b -> m b
+ghci> :type (>>=)
+(>>=) :: (Monad m) => m a -> (a -> m b) -> m b
+
+
+>> 操作符把两个动作顺序连接在一起：执行第一个动作，然后是第二个。计算的结果是第二个动作的结果。第一个动作的结果被抛弃掉了。这类似于在do语句块中包含简单的一行。可以用 putStrLn "line 1" >> putStrLn "line 2" 来试验下。它会打印出两行，抛弃掉第一个 putStrLn的结果，并给出第二个的结果。
+
+>>= 操作符执行一个动作，然后把它的结果传递给返回一个动作的函数。第二个动作也会被执行，整个表达式的结果是第二个动作的结果。可以用  getLine >>= putStrLn 作为一个例子，它从键盘读入一行，然后显示出来。
+
+
+我们来重写一个例子，让它不包含do语句块。还记得本章开始的这个例子么？
+
+-- file: ch07/basicio.hs
+main = do
+       putStrLn "Greetings!  What is your name?"
+       inpStr <- getLine
+       putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!"
+
+我们不使用do语句块来写：
+
+-- file: ch07/basicio-nodo.hs
+main =
+    putStrLn "Greetings!  What is your name?" >>
+    getLine >>=
+    (\inpStr -> putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!")
+
+	
+Haskell编译器会对do语句块做一个这样的转换。
+
+[Tip]	Tip
+
+忘记如何用 \ (lambda表达式)了？看“匿名函数(lambda)”一节。
+
+
+return的真实本性
+
+本章早些时候提到return并非其表面的含义。很多语言中有一个关键字叫return，它们将会立刻中断一个函数的执行，并把结果返回给调用者。
+
+Haskell的return函数很不同。在Haskell里，return用来把数据包装到monad中。在谈到I/O时，return用来把纯的数据包装到IO monad 中。
+
+
+那我们为什么要这样做呢？记住任何依赖于 I/O 的结果必须存在于  IO monad中。因此如果写一个执行 I/O操作的函数，以及一个纯的计算函数，就需要使用 return 把函数的结果变成适当的返回类型。否则将会发生类型错误。下面十一个例子：
+
+-- file: ch07/return1.hs
+import Data.Char(toUpper)
+
+isGreen :: IO Bool
+isGreen =
+    do putStrLn "Is green your favorite color?"
+       inpStr <- getLine
+       return ((toUpper . head $ inpStr) == 'Y')
+
+我们有一个纯的计算，它产生一个布尔值。这个计算传递给return，return把它放到 IO monad 中。因为它是 do语句块的最后一个值，它就成了 isGreen 的返回值，但这并不是因为我们使用了return函数。
+
+这是相同程序的另一个版本，它把纯的计算提取到一个独立的函数中。这有助于保持纯代码的分离，并且使意图更加明确。
+
+
+-- file: ch07/return2.hs
+import Data.Char(toUpper)
+
+isYes :: String -> Bool
+isYes inpStr = (toUpper . head $ inpStr) == 'Y'
+
+isGreen :: IO Bool
+isGreen =
+    do putStrLn "Is green your favorite color?"
+       inpStr <- getLine
+       return (isYes inpStr)
+
+
+
+最后，下面这个认为的例子表明return并不一定出现在do语句块的末尾。在实践中，它常常在末尾，但并非必要。
+
+-- file: ch07/return3.hs
+returnTest :: IO ()
+returnTest =
+    do one <- return 1
+       let two = 2
+       putStrLn $ show (one + two)
+	
+注意我们用 <- 与 return组合使用，但是 let 使用简单的文字。这是因为要进行相加，需要纯的值。需要用 <- 把东西从 monad 种“拉”出来，它是return的反作用。在ghci中执行它，可以看到显示出3。
+		
+
+Haskell真的是命令式的么？
+
+这些do语句块看上去很像命令式语言。毕竟，大多数时候你给出顺序执行的命令。
+
+但是Haskell的核心依然是一种惰性语言。虽然经常需要顺序的执行I/O动作，它使用Haskell已经有的工具来实现。Haskell通过使用 IO monad 来把I/O与语言的其他部分分离开。
+
+
+惰性I/O 的副作用
+
+本章前面讲到了 hGetContents。我们解释说它返回的 String 可以在纯代码中使用。
+
+我们需要对什么是副作用做进一步明确。当我们说Haskell没有副作用时，究竟是什么意思呢？
+
+
+在从某种参面上说，副作用总是可能的。欠佳的loop循环，即使用纯代码书写，也会导致系统内存耗尽并令机器崩溃。或者可以导致数据被交换到磁盘上。
+
+当我们说没有副作用时，是指Haskell中纯的代码不能执行引发副作用的命令。纯函数不能修改全局变量，不能进行I/O请求，也不能执行命令来破坏系统。
+
+
+当把hGetContents返回的String传递到纯函数，函数并不知道这个字符串是来自磁盘的文件。它还和以往一样的表现，但是处理那个String要导致环境进行I/O命令。纯函数不执行它们；它们的发生是纯函数被处理的结果，就像在内存和磁盘交换的那个例子。
+
+
+在某些情况下，您可能需要对I/O何时发生有更多的控制。也许你正在交互的从用户读取数据，或者通过管道从其他程序读入，这时需要直接与用户通信。在这些情况下，hGetContents就不合适了。
+
+
+
+缓冲
+I/O子系统是现代计算机中最慢的部分。写入磁盘花费的时间千倍于写入内存。通过网络写入再慢个几百上千倍。即使你的操作不直接与磁盘通信－也许是因为数据被缓存了－I/O依然会进行系统调用，这本身就把速度拖慢了。
+
+为此，现代的操作系统和编程语言都提供一些工具，帮助程序更高效的处理I/O。操作系统通常执行缓存，把常用的数据块存这内存中以进行快速存取。
+
+
+编程语言通常执行缓冲。这意味着它们可能向操作系统请求一大块数据，即使代码一次只处理一个字节。通过这样做，可以获得很大的性能提升，因为每次对操作系统进行I/O请求都会产生很多开销。缓冲可以让我们这读相同数量数据时产生少的多的I/O请求。
+
+Haskell也在它的I/O系统里提供了缓冲。很多情况下，这是默认的。到目前为止，我们假装它不存在。Haskell通常很好的选取默认模式。但是这个默认的很少是最快的。如果你的代码I/O速度很重要，改变缓冲模式可以给程序带来很大影响。
+
+缓冲模式
+Haskell中有三种不同的缓冲模式。用 BufferMode 类型定义：NoBuffering ， LineBuffering ，和BlockBuffering。
+
+
+NoBuffering就像它的名字一样：不进行缓冲。通过像hGetLine 这样的函数读入数据，将会一次从OS读取一个字符。会立刻写入数据，并且经常是一次写一个字符。因此NoBuffering经常性能很差，不适合一般用途使用。
+
+LineBuffering 在出现换行符或者数据太多时，将缓冲数据写出，在输入时，它尝试读取数据块的所有数据直到遇到换行符。当从终端读取时，每按下回车它就会立刻返回数据。它往往是合理的默认设置。
+
+
+BlockBuffering让Haskell读写固定大小的数据块。在处理大批量数据时，这时性能最好的，即使数据是面向行的。但是它不能用在交互程序上，因为它在块读取满之前是阻塞的。BlockBuffering接收一个Maybe类型参数，如果是 Nothing，它使用Haskell实现预定义的缓冲区大小。或者，你可以用 Just 4096 这样的设置来把缓冲区设置成4096个字节。
+
+
+默认的缓冲区模式取决于操作系统和Haskell的实现。可以调用 hGetBuffering 来询问系统当前的缓冲模式。可以用hSetBuffering 设置当前的缓冲模式，它接收一个句柄和一个 BufferMode。例如，可以写 hSetBuffering stdin (BlockBuffering Nothing)。
+
+
+
+清空缓冲区
+对于任何类型的缓冲，有时你可能需要强制让Haskell把缓冲区的内容写出。有时这会自动发生：如调用 hClose。而有时你想要调用 hFlush，这将强制把等待的数据立刻写出。当句柄是网络socket时会很有用，因为你可能需要立刻写出数据。或者希望把数据写到磁盘上，使得其他并发读取它的程序可以使用。
+
+
+读取命令行参数
+很多命令行程序对传给它的参数感兴趣。System.Environment.getArgs 返回 IO [String] ，列出了每个参数。这与 C 中的argv[1] 开始的部分相同。程序名（C里的 argv[0]）可以用 System.Environment.getProgName 获得。
+
+System.Console.GetOpt 模块提供了一些解析命令行选项的工具。如果你的程序具有复杂的选项，会发现它很有用。在“命令行解析”一节中有使用它的例子。
+
+
+环境变量
+
+如果需要读取环境变量，可以用System.Environment的两个函数之一：getEnv或getEnvironment。getEnv查看特定的变量，如果不存在就抛出异常。getEnvironment 把所有环境变量返回成 [(String, String)] 的值，之后就可以用如lookup这些函数来找到你需要的环境变量了。
+
+设置环境变量在Haskell中没有跨平台的方法。如果在POSIX平台上如Linux，你可以用System.Posix.Env模块中的 putEnv 或者setEnv。Windows上的环境设置没有定义。
+
+[15] 后面会看到它具有更广泛的应用，但现在考虑这几条就够了。
+
+[16] 值() 的类型也是()。
+
+[17] 命令式语言的程序员可能会担心这样的递归调用会消耗大量的桟空间。在Haskell里，递归是常见的用法，编译器足够聪明可以通过尾递归优化来避免消耗太多桟空间。
+
+[18] 例如在混合程序的C语言部分存在bug。
+
+[19] 与其他程序通过管道进行互操作的更详细信息，请看“扩展程序：管道”一节。
+
+[20] POSIX 程序员会有兴趣知道它与C中的unlink()相对应。
+
+[21] hGetContents 将在“惰性I/O”一节讨论
+
+[22] 也有一个操作标准输入的快捷函数 getContents
+
+[23] 更精确的说，它是从文件当前位置到文件末尾的全部内容
+
+[24] I/O错误如磁盘空间满了
+
+[25] 技术上讲，mapM把一组单独的I/O动作组合成一个大的动作。大的动作执行时单独的动作被分别执行。
