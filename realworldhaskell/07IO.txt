@@ -16,24 +16,23 @@ main = do
        inpStr <- getLine
        putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!"
 
-可以把这个程序编译成独立可执行文件，或者用runghc执行它，也可以在 ghci中调用它的main函数。这是用 runghc 的例子：
+可以把这个程序编译成独立可执行文件，或者用runghc执行它，也可以在 ghci中调用它的main函数。这里是一个用 runghc 的例子：
 
 $ runghc basicio.hs
 Greetings!  What is your name?
 John
 Welcome to Haskell, John!
 
-这是很简单明亮的结果。可以看到 putStrLn 输出一个String，后跟一个换行符。getLine从标准输入中读入一行。<- 语法是新的。简单的说，它把执行I/O动作的结果绑定到一个名字上。用列表链接操作符 ++ 来把输入字符串和我们的文本连接起来。
+输出的结果还是相当明了的，可以看到 putStrLn 输出了一个 String 和一个换行符。getLine从标准输入中读入一行。你可能还不太了解 <- 的语法。简单地说，它就是把执行I/O操作的结果绑定到变量名上。然后我们用列表连接操作符 ++ 来把输入的字符串和程序自己的文本连接起来。
 
-看下 putStrLn 和 getLine的类型。可以从库参考文档中得到这个信息，或者直接问ghci：
+我们来看一下 putStrLn 和 getLine 的类型，你可以从库参考文档中找到这个信息，或者直接问ghci：
 
 ghci> :type putStrLn
 putStrLn :: String -> IO ()
 ghci> :type getLine
 getLine :: IO String
 
-注意这两个类型的返回值里都有IO。因此我们知道他们可能具有副作用，或者调用相同参数时结果可能不通，或者两者都有。putStrLn 的类型看上去像个函数。取一个String类型的参数并返回类型为 IO () 的返回值。到底什么是 IO ()呢？
-
+注意这两个类型的返回值里都有IO类型。这样我们就可以判断出他们要么是具有副作用，要么是用相同参数调用时返回结果可能不同，也可能是二者皆有。putStrLn 的类型看上去像个函数。接受一个String类型的参数并返回一个 IO () 类型的值。那么到底什么是 IO () 呢？
 
 类型为 IO 某某 的就是一个I/O操作。你可以保存它们，但是不会产生任何影响。你可以写一句 writefoo = putStrLn "foo"，但这句话不会做任何有用的事。但是如果之后在另一个 I/O 操作中使用到了 writefoo，那么当父操作被调用的时候，writefoo就会被执行 -- I/O操作可以通过更大的 I/O操作结合在一起。()是一个空的元组（发音为 "unit"），表示从 putStrLn中没有返回值。与 Java或C中的void类似。
 
