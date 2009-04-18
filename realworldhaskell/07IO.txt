@@ -260,19 +260,18 @@ print = hPrint stdout
 
 这里使用了部分函数。如果不清楚，回顾下“部分函数应用和柯里化”一节。
 
-刚才我们对三个标准文件句柄的解释只是说它们“通常”所指向的东西，因为有的操作系统允许你在启动的时候把这些文件句柄重定向到其他的地方——文件，设备，甚至是其他程序。这个特性在POSIX系统（Linux,BSD, Mac）上的shell脚本中被广泛应用，在Windows上也可以使用。
+刚才我们对三个标准文件句柄的解释的只是它们“通常”都指向什么，有的操作系统还允许你在启动的时候把这些文件句柄重定向到其他的地方——文件，设备，甚至是其他程序。这个特性在POSIX系统（Linux,BSD, Mac）上的shell脚本中被广泛应用，在Windows上也可以使用。
 
 通常使用标准输入输出而非显示指定文件是有好处的，这样你可以通过终端和用户进行交互。同时也允许你操作输入输出文件，如果需要的话甚至还可以和其他程序组合在一起。
 
-觉个例子来说，你可以这样给 callingpure.hs 提供输入：
+举个例子来说，你可以这种方式给 callingpure.hs 提供输入：
 
 $ echo John|runghc callingpure.hs
 Greetings once again.  What is your name?
 Pleased to meet you, John.
 Your name contains 4 characters.
-      
 
-当callingpure.hs 执行时，它不需要等待键盘输入，而是从 echo 程序接收到 John。同时注意到和用键盘输入时不同，输出中没有John的那一行。终端把你键入的内容回显给你，但这是通过另一个程序进行输入，不会把输入包含在输出流里。
+当执行 callingpure.hs 时，它不需要等待键盘输入，而是从 echo 程序接收到 John。同时注意到和用键盘输入时不同，输出中没有John的那一行。终端把你键入的内容回显给你，但这是通过另一个程序进行输入，不会把输入包含在输出流里。
 
 删除和重命名文件
 
@@ -296,7 +295,7 @@ openTempFile 的返回类型是  IO (FilePath, Handle)。元组的第一部分�
 
 扩展实例：函数式I/O和临时文件
 
-这里有一个比较庞大的例子，它融合了本章，之前章节，以及一些还没有见过的概念。试着阅读这个程序，看看能否看出它是做什么用的，以及是如何去做的。
+这里有一个比较庞大的例子，它融合了本章以及之前章节，甚至一些还没见过的概念。尝试阅读本程序，看看能否看出它是做什么的，以及是如何去做的。
 
 -- file: ch07/tempfile.hs
 import System.IO
@@ -309,8 +308,8 @@ main :: IO ()
 main = withTempFile "mytemp.txt" myAction
 
 {- 
-程序的核心。使用文件路径和临时文件句柄进行调用。
-当函数退出，临时文件将会被自动关闭并删除，因为 myAction 是从 withTempFile 中调用的。
+程序核心部分。传递一个文件路径和一个临时文件句柄进行调用。
+myAction 是从 withTempFile 中调用的，所以当 myAction 函数退出时，临时文件将会被自动关闭并删除，。
 -}
 
 myAction :: FilePath -> Handle -> IO ()
@@ -330,13 +329,13 @@ myAction tempname temph =
                   tempdata
        hPutStrLn temph tempdata
 
-       -- 查看新的位置。这并不真正改变pos在内存中的值，
-       -- 但是它让 "pos"为 "do" 程序块剩下的部分中指向了另一个值。
+       -- 查看新的位置，实际上这并不改变pos在内存中的值，
+       -- 但是它让 "pos" 变量在 "do" 程序块后面的部分中指向了另一个值。
 
        pos <- hTell temph
        putStrLn $ "After writing, my new position is " ++ show pos
 
-       -- 转到文件起始位置并开始显示
+       -- 转移到文件起始位置并开始显示
        putStrLn $ "The file content is: "
        hSeek temph AbsoluteSeek 0
 
@@ -346,18 +345,18 @@ myAction tempname temph =
        -- 把文件一个字节一个字节输出，后跟 \n
        putStrLn c
 
-       -- 用 Haskell 字面显示
+       -- 以 Haskell 字面量形式显示
        putStrLn $ "Which could be expressed as this Haskell literal:"
        print c
 
 
 {-
-这个函数需要两个参数：文件名的模式和另一个函数。这将创建一个临时文件，并把文件名和句柄传递给那个函数。
+本函数接收两个参数：临时文件名模式和一个函数。它会创建一个临时文件，并将文件名和文件句柄传递给那个函数。
 
-临时文件用openTempFile 创建。目录是getTemporaryDirectory 所指定的，如果系统没有临时目录概念，则用 "." 。
-给定的模式传递给 openTempFile。
+临时文件用通过 openTempFile 创建的。目录是 getTemporaryDirectory 所指定的，如果系统没有临时目录概念，则用 "." 。
+给定的文件名模式被传递给了 openTempFile。
 
-给定函数中止，即使因为异常而中止，文件句柄都会关闭，并删除文件。
+当给定函数中止，即使是异常中止，文件句柄也会被关闭，同时临时文件被删除。
 -}
 
 withTempFile :: String -> (FilePath -> Handle -> IO a) -> IO a
@@ -370,33 +369,32 @@ withTempFile pattern func =
        -- first raised an exception.  If getTemporaryDirectory raised an
        -- exception, just use "." (the current working directory).
 库参考手册里说如果系统不支持临时目录概念的话，getTemporaryDirectory 将会抛出异常。
-因此我们在 catch 之下来执行 getTemporaryDirectory。catch 接受两个函数参数：一个直接运行，另一个在第一个函数抛出异常时运行。如果getTemporaryDirectory抛出了异常，就使用"." 
+因此我们在 catch 之下来执行 getTemporaryDirectory。catch 接受两个函数参数：一个会直接运行，另一个会在第一个函数抛出异常时运行。如果getTemporaryDirectory抛出了异常，就使用"." 
 
        tempdir <- catch (getTemporaryDirectory) (\_ -> return ".")
        (tempfile, temph) <- openTempFile tempdir pattern 
 
 
 
-	-- 调用  (func tempfile temph) 对临时文件进行操作。 finally 需要两个动作作为参数。第一个会直接被执行。
-	-- 第二个是在第一个动作之后，无论第一个是否抛出了异常，都会进行执行的。
-	-- 这样，我们就能确保临时文件总是被删除。finally 的返回值是第一个操作的返回值。
+	-- 调用  (func tempfile temph) 对临时文件进行操作。 finally 需要两个操作作为参数。第一个会被直接执行。
+	-- 第一个动作执行之后，不论是否抛出异常，第二个操作都会被执行。
+	-- 这样，我们就能确保临时文件总是会被删除。finally 返回第一个操作的返回值。
 
        finally (func tempfile temph) 
                (do hClose temph
                    removeFile tempfile)
 
 
+我们来看下程序的结尾。从withTempFile这个函数可以看出Haskell在引入I/O的时候并没有忘记它自己函数式的本质。这个函数取一个String和另一个函数做参数。withTempFile使用临时文件的文件名和句柄传入的函数进行调用。当传入的函数退出时，临时文件被关闭和删除。因此即使在处理I/O时，我们依然能够看到传递函数作为参数的用法。Lisp程序员大概会发现这个 withTempFile 函数跟Lisp里的 with-open-file 函数很类似。
 
-让我们看下程序的结尾。withTempFile函数表明Haskell引入I/O时没有忘记它的函数式本质。这个函数取一个String和另一个函数做参数。传入withTempFile的函数用临时文件的名字和句柄进行调用。当那个函数退出时，临时文件被关闭和删除。因此即使在处理I/O时，我们依然能够看到传递函数作为参数的用法。Lisp程序员可能会发现我们的withTempFile 函数跟Lisp里的 with-open-file 函数很类似。
+适当的异常处理可以让你的程序在遇到错误时更加健壮。通常情况下对临时处理完成后都需要把临时文件删除，即使发生了错误也不例外。我们需要保证这一点。异常处理更多信息见第19章《错误处理》。
 
-适当的异常处理可以让你的程序面对错误时更加健壮。你通常需要在处理完成后把临时文件删除，即使发生了错误也不例外。因此我们要对此作出保证。异常处理更多信息见第19章《错误处理》。
+回到程序的开始，main的定义只是简单的 withTempFile "mytemp.txt" myAction 。 之后使用临时文件的文件名和文件句柄调用 myAction。
 
-回到程序的开始，main的定义只是简单的 withTempFile "mytemp.txt" myAction 。 而 myAction 之后通过用临时文件的名字和句柄被调用。
-
-myAction在终端上显示一些信息，向文件中写入一些数据，移动到文件开头并用 hGetContents 读回数据。再把文件内容一个字节一个字节的显示出来。之后又通过 print c 来按Haskell的字面格式显示输出，这个操作与 putStrLn (show c) 相同。
+然后myAction在终端上显示一些信息，向文件中写入一些数据，再移动到文件开头用 hGetContents 读取数据，再把文件内容一个字节一个字节的显示出来。之后又通过 print c 来按Haskell的字面量格式输出出来，最后这个操作等价于 putStrLn (show c) 相同。
 
 让我们来看看输出：
-		
+
 $ runhaskell tempfile.hs
 Welcome to tempfile.hs
 I have a temporary file at /tmp/mytemp8572.txt
@@ -408,47 +406,40 @@ The file content is:
 
 Which could be expressed as this Haskell literal:
 "[1,2,3,4,5,6,7,8,9,10]\n"
-    
 
+每次运行此程序，临时文件名都会稍有不同，因为它包含有随机生成的部分。观察这些输出，你可能会有如下一些疑问：
 
+    1、为什么写入了22个字节后，位置是23？
 
-每次运行此程序，临时文件名会稍有不同，因为它包含了随机生成的部分。观察这些输出，你可能会有如下一些疑问：
+    2、为什么文件内容最后显示有一个空行？
 
-    1 。为什么写入了22个字节后，位置是23？
+    3、为什么在Haskell字面格式显示的末尾有一个 \n
 
-    2 。为什么文件内容最后显示有一个空行？
+你可能已经猜到这三个问题的互相之间都是有关联的。你可以先自己想一会，看能否找出答案。如果需要帮助，这里也为你提供一些解释：
 
-    3 。为什么在Haskell字面格式显示的末尾有一个 \n
+    1、因为我们是用的 hPutStrLn 而不是 hPutStr 来写入数据。hPutStrLn 总是会在行末尾添加 \n，这个 \n 在 tempdate 中并不存在。
 
-你可能已经猜到这三个问题的答案都是相关的。可以自己先想一会，看看能否找出答案。如果需要些帮助，这里提供一些解释：
+    2、这里是用 putStrLn c  来显示文件内容 c 。因为文件内容本来就是通过 hPutStrLn 写入的，所以 c 的末尾是个换行符，而 putStrLn 在输出的时候又在末尾添加了一个换行符，结果就显示出了一个空行。
 
-    1 。因为我们用 hPutStrLn 而不是 hPutStr 写入数据。hPutStrLn 总是在行末尾添加 \n，这在 tempdate 中并不存在。
+    3、\n 就是一开始hPutStrLn输出的换行符。
 
-    2 。用 putStrLn c  来显示文件内容 c  。因为数据原来是通过 hPutStrLn 写入的，所以 c 的结尾就是换行符，putStrLn 又给他的末尾添加了第二个换行符。结果显示出了一个空白行。
-
-   3. \n 就是一开始hPutStrLn输出的换行符。
-
-最后说明下，在不同的操作系统上字节数计算方式可能有所不同。例如在Windows上使用\r\n的双子节序列作为行尾标记，因此在不同的平台上可能看上去会不太一样。
-
+最后说明下，在不同的操作系统上字节数计算方式会有所不同。例如在Windows上使用\r\n的双子节序列作为行尾标记，因此在不同的平台上可能看上去会不太一样。
 
 惰性I/O
 
-这一章目前位置，你看到的例子都是很传统的 I/O。每一行或数据块都要求是独立的，并需要单独的处理。
+本章到目前为止，你看到的例子都是比较传统的 I/O 处理方式。每一行或每一块数据都是单独读取的，并且也需要单独进行处理。
 
-Haskell还提供了另一种方式。因为Haskell是惰性语言，这意味着只有必须知道某块数据的值时才会求值，有一些处理I/O的新方法。
-
+Haskell还提供另一种方式。因为Haskell是惰性语言，也就是说只有到最后关头才会对数据的值进行求值，所以这里会一些新颖的处理I/O的方法。
 
 hGetContents
 
-一个处理I/O的新方法是hGetContents函数。hGetContents 的类型是   Handle -> IO String。返回的 String 表示句柄给定文件中的全部数据。
+新方法之一就是hGetContents函数。hGetContents 的类型是 Handle -> IO String。返回的 String 的值就是指定文件句柄中的全部内容。
 
-在严格执求值语言里，用这样的函数往往是个坏主意。读取一个2KB文件的全部内容是可以的，但如果尝试读取500GB文件的全部内容，将可能因为不够内存存放数据而崩溃。在这些语言中，需要用传统的机制如循环来处理文件的全部内容。
+在严格求值的语言里，使用这样的函数往往是不太好的。因为读取一个2KB的文件还可以，要是读取一个500GB文件的全部内容，将很可能会因为内存不够而崩溃。在这些语言中，需要用传统的机制如循环来处理文件的全部内容。
 
+但是hGetContents是不一样的。它返回的String是惰性求值的。也就是说在调用hGetContents 时并不会进行实际的读取操作。只有当列表的元素（字符）被处理时才会从文件句柄中读取数据。当String中的元素不被使用时，Haskell的垃圾收集器会自动释放它的内存。所有这些都是透明的。它看上去就像是——其实实际上也是——一个纯的String，因此你可以把它传递给纯函数式的代码（没有IO）。
 
-但是hGetContents是不同的。它返回的String是惰性求值的。在调用hGetContents 时不会进行实际读取。只有当列表的元素（字符）被处理时才会从句柄中读取数据。当String中的元素不在使用时，Haskell的垃圾收集器自动释放它的内存。这些都是透明的。它看上去像－并且实际上就是－一个纯的String，因此你可以把它传递给纯的代码（没有IO）。
-
-
-让我们看一个例子。前一节“处理文件和句柄”有一个命令式的程序，把文件的全部内容转换成大写。它的命令式算法与其他很多语言中见到的类似。这里时用惰性求值的简单的多的算法：
+我们来看一个例子。前一节“处理文件和句柄”中有一个命令式的程序，把文件的全部内容转换成大写。它的命令式算法与其他很多语言中见到的差不多。这里展示一个利用惰性求值的简单地多的算法：
 
 -- file: ch07/toupper-lazy1.hs
 import System.IO
@@ -468,9 +459,9 @@ processData :: String -> String
 processData = map toUpper
 
 
-注意hGetContents为我们处理所有的读取。此外，注意下processData。它是一个纯函数，因为它没有副作用，并且每次调用对相同参数总返回相同结果。它不需要－也没办法－知道它的输入是文件中惰性读取的。不管20个字符的字符串还是磁盘上存的500GB的数据，它都可以完美的处理。
+注意hGetContents为我们处理了所有的读取逻辑。还有 processData 这个函数，它是一个纯函数，因为它没有副作用，并且使用相同的参数调用总是返回相同的结果。它不需要——也没办法——知道它的输入是从文件中惰性读取的。不管是20个字符的字符串还是磁盘上存的500GB的数据，它都可以完美地进行处理。
 
-可以用ghci来确认这一点：
+可以使用ghci来确认一下：
 
 ghci> :load toupper-lazy1.hs
 [1 of 1] Compiling Main             ( toupper-lazy1.hs, interpreted )
@@ -485,7 +476,7 @@ processData "Hello!" :: String
 [Warning]	Warning
 
 
-如果在上面的例子里，尝试把inpStr保留到使用之后（调用 processData），程序将会损失内存使用效率。这是因为编译器必须把inpStr 的值保留在内存中，已备后面使用之需。这里知道 inpStr 永远不会再用了，因此用完它后立刻就释放了。只要记住：内存只有在最后一次使用后被释放。
+在上面的例子里，尝试把inpStr保留到使用之后（调用 processData），程序将会损失内存使用效率。这是因为编译器必须把inpStr 的值保留在内存中，已备后面使用之需。这里知道 inpStr 永远不会再用了，因此用完它后立刻就释放了。只要记住：内存只有在最后一次使用后被释放。
 
 
 这个程序有点冗长，以清楚看到使用了纯函数式代码。这里有个更简洁的版本，接下来将以这个例子为基础。
