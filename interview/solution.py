@@ -5,32 +5,32 @@
 Tower Defense (Stage I) 
 ===========================
 
-æ€è·¯ï¼šå…ˆæŠŠå¾…å»ºå¡”æ¥¼å»ºä¸Šå»ï¼Œç„¶åæ·±åº¦ä¼˜å…ˆéå†åœ°å›¾ï¼Œçœ‹èƒ½å¦è”é€šã€‚
+Ë¼Â·£ºÏÈ°Ñ´ı½¨ËşÂ¥½¨ÉÏÈ¥£¬È»ºóÉî¶ÈÓÅÏÈ±éÀúµØÍ¼£¬¿´ÄÜ·ñÁªÍ¨¡£
 
-å¼€å‘ç¯å¢ƒï¼šUbuntu8.10 Python2.5
+¿ª·¢»·¾³£ºUbuntu8.10 Python2.5
 
-è®¾è®¡è¦ç‚¹
+Éè¼ÆÒªµã
 =========
 
-ä½¿ç”¨äºŒç»´åˆ—è¡¨è¡¨ç¤ºåœ°å›¾ã€‚
+Ê¹ÓÃ¶şÎ¬ÁĞ±í±íÊ¾µØÍ¼¡£
 
-ä½¿ç”¨å…ƒç»„ tuple è¡¨ç¤ºèŠ‚ç‚¹åæ ‡ã€‚
+Ê¹ÓÃÔª×é tuple ±íÊ¾½Úµã×ø±ê¡£
 
-ä½¿ç”¨æ·±åº¦ä¼˜å…ˆç®—æ³•éå†åœ°å›¾ã€‚
+Ê¹ÓÃÉî¶ÈÓÅÏÈËã·¨±éÀúµØÍ¼¡£
 
-åæ ‡ç³»ç»Ÿ
+×ø±êÏµÍ³
 =========
 
-å·¦ä¸Šè§’ä¸ºåŸç‚¹ï¼Œå‚ç›´æ–¹å‘ä¸º X è½´ï¼Œæ°´å¹³æ–¹å‘ä¸º Y è½´ï¼ˆè¯¥åæ ‡ç³»ç»Ÿç”±é—®é¢˜æè¿°ä¸­æ‰€å®šä¹‰ï¼‰ã€‚
+×óÉÏ½ÇÎªÔ­µã£¬´¹Ö±·½ÏòÎª X Öá£¬Ë®Æ½·½ÏòÎª Y Öá£¨¸Ã×ø±êÏµÍ³ÓÉÎÊÌâÃèÊöÖĞËù¶¨Òå£©¡£
 
-è¾“å…¥æ–‡ä»¶æ ¼å¼
+ÊäÈëÎÄ¼ş¸ñÊ½
 =============
 
-ç¬¬ä¸€è¡Œæ˜¯ç©ºæ ¼åˆ†éš”çš„ä¸¤ä¸ªæ•°å­—ï¼Œåˆ†åˆ«ä¸ºé«˜åº¦Må’Œå®½åº¦Nï¼Œ
-éšåçš„Mè¡Œæ˜¯äºŒç»´åœ°å›¾æ•°æ®ï¼Œå­—ç¬¦'-'è¡¨ç¤ºç©ºåœ°ï¼Œå­—ç¬¦'*'è¡¨ç¤ºå¡”æ¥¼ï¼Œå­—ç¬¦é—´ä»¥ç©ºæ ¼åˆ†éš”ï¼Œ
-æœ€åä¸€è¡Œæ˜¯ç©ºæ ¼åˆ†éš”çš„ä¸¤ä¸ªæ•°å­—ï¼Œä¸ºç›®æ ‡å¡”æ¥¼çš„åæ ‡ã€‚
+µÚÒ»ĞĞÊÇ¿Õ¸ñ·Ö¸ôµÄÁ½¸öÊı×Ö£¬·Ö±ğÎª¸ß¶ÈMºÍ¿í¶ÈN£¬
+ËæºóµÄMĞĞÊÇ¶şÎ¬µØÍ¼Êı¾İ£¬×Ö·û'-'±íÊ¾¿ÕµØ£¬×Ö·û'*'±íÊ¾ËşÂ¥£¬×Ö·û¼äÒÔ¿Õ¸ñ·Ö¸ô£¬
+×îºóÒ»ĞĞÊÇ¿Õ¸ñ·Ö¸ôµÄÁ½¸öÊı×Ö£¬ÎªÄ¿±êËşÂ¥µÄ×ø±ê¡£
 
-è¾“å…¥ç¤ºä¾‹ï¼š ::
+ÊäÈëÊ¾Àı£º ::
 
     3 3
     - * -
@@ -38,7 +38,7 @@ Tower Defense (Stage I)
     - - -
     2 0
 
-ä½¿ç”¨æ–¹æ³•
+Ê¹ÓÃ·½·¨
 =========
 
 ::
@@ -56,9 +56,9 @@ Tower Defense (Stage I)
       -l LOGFILENAME, --log=LOGFILENAME
                             specify log file name, default ./solution.log
     
-ç¨‹åºå¯ä»¥ä½¿ç”¨å‘½ä»¤è¡Œå‚æ•°æŒ‡å®šè¾“å…¥è¾“å‡ºæ–‡ä»¶ï¼Œé»˜è®¤ä½¿ç”¨æ ‡å‡†è¾“å…¥è¾“å‡ºã€‚
+³ÌĞò¿ÉÒÔÊ¹ÓÃÃüÁîĞĞ²ÎÊıÖ¸¶¨ÊäÈëÊä³öÎÄ¼ş£¬Ä¬ÈÏÊ¹ÓÃ±ê×¼ÊäÈëÊä³ö¡£
 
-å¯ä»¥ç›´æ¥æ‰§è¡Œç¨‹åºäº¤äº’å¼è¾“å…¥æ ·æœ¬æ•°æ®ï¼ˆæ³¨æ„è¦è¾“å…¥ Ctrl+D(linux) æˆ–è€… Ctrl+Z(windows) ç»“æŸè¾“å…¥ï¼‰ï¼Œ ::
+¿ÉÒÔÖ±½ÓÖ´ĞĞ³ÌĞò½»»¥Ê½ÊäÈëÑù±¾Êı¾İ£¨×¢ÒâÒªÊäÈë Ctrl+D(linux) »òÕß Ctrl+Z(windows) ½áÊøÊäÈë£©£¬ ::
 
     $ ./solution.py
     3 4
@@ -68,45 +68,50 @@ Tower Defense (Stage I)
     0 1
     0 1 No
 
-ä¹Ÿå¯å…ˆå°†é—®é¢˜æè¿°å†™å…¥æ–‡ä»¶ï¼ŒæŒ‡å®šè¾“å…¥æ–‡ä»¶åæ¥æ‰§è¡Œã€‚ ::
+Ò²¿ÉÏÈ½«ÎÊÌâÃèÊöĞ´ÈëÎÄ¼ş£¬Ö¸¶¨ÊäÈëÎÄ¼şÃûÀ´Ö´ĞĞ¡£ ::
 
     $ ./solution.py -f input_file
     0 1 No
 
-æ‰§è¡Œæµ‹è¯•
+Ö´ĞĞ²âÊÔ
 =========
 
-* ä¼ é€’ -t æˆ– --test å‚æ•°æ‰§è¡Œæ–‡æ¡£æµ‹è¯•ã€‚
-* ./test_solution.py æ‰§è¡Œå•å…ƒæµ‹è¯•ã€‚
+* ´«µİ -t »ò --test ²ÎÊıÖ´ĞĞÎÄµµ²âÊÔ¡£
+* ./test_solution.py Ö´ĞĞµ¥Ôª²âÊÔ¡£
 
 ChangeLog
 ==========
 
-version 1.1 (2009å¹´ 04æœˆ 13æ—¥ æ˜ŸæœŸä¸€ 22:52:19 CST)
+version 1.1 (2009Äê 04ÔÂ 13ÈÕ ĞÇÆÚÒ» 22:52:19 CST)
 ---------------------------------------------------
 
-1. åŠ å…¥å‘½ä»¤è¡Œå‚æ•°
-2. åŠ å…¥æ–‡æ¡£æµ‹è¯•å’Œå•å…ƒæµ‹è¯•
-3. logä¸€äº›è°ƒè¯•ä¿¡æ¯ï¼Œæ–¹ä¾¿å®šä½é—®é¢˜ã€‚
-4. å¢åŠ æ‰§è¡Œæ¨¡å¼ï¼Œå¯é€šè¿‡å‚æ•°æŒ‡å®šè¾“å…¥è¾“å‡ºæ–‡ä»¶
-5. å¢åŠ å¯¹è¾“å…¥çš„é”™è¯¯æ£€æŸ¥
+1. ¼ÓÈëÃüÁîĞĞ²ÎÊı
+2. ¼ÓÈëÎÄµµ²âÊÔºÍµ¥Ôª²âÊÔ
+3. logÒ»Ğ©µ÷ÊÔĞÅÏ¢£¬·½±ã¶¨Î»ÎÊÌâ¡£
+4. Ôö¼ÓÖ´ĞĞÄ£Ê½£¬¿ÉÍ¨¹ı²ÎÊıÖ¸¶¨ÊäÈëÊä³öÎÄ¼ş
+5. Ôö¼Ó¶ÔÊäÈëµÄ´íÎó¼ì²é
 
-TODO: ä½¿ç”¨ c é‡æ–°éå†åœ°å›¾éƒ¨åˆ† _traverse.c ï¼Œæä¾›æ ¸å¿ƒç®—æ³•çš„æ‰§è¡Œæ€§èƒ½ã€‚
+TODO: Ê¹ÓÃ c ÖØĞÂ±éÀúµØÍ¼²¿·Ö _traverse.c £¬Ìá¹©ºËĞÄËã·¨µÄÖ´ĞĞĞÔÄÜ¡£
 
 '''
 import logging
+
+RIGHT = (0, 1)
+DOWN = (1, 0)
+LEFT = (0, -1)
+UP = (-1, 0)
 
 class TowerDefenseException(BaseException):
     pass
 
 def get_input(infile):
     '''
-    è§£æè¾“å…¥æ–‡ä»¶ï¼Œæ„å»ºåœ°å›¾ï¼Œå¹¶å°†å¾…å»ºå¡”æ¥¼å»ºä¸Šå»
+    ½âÎöÊäÈëÎÄ¼ş£¬¹¹½¨µØÍ¼£¬²¢½«´ı½¨ËşÂ¥½¨ÉÏÈ¥
 
-    å‚æ•°ï¼šè¾“å…¥æ–‡ä»¶å¯¹è±¡
-    è¾“å‡ºï¼šåœ°å›¾ï¼Œéœ€è¦æŠµè¾¾çš„ç›®æ ‡èŠ‚ç‚¹åæ ‡ï¼Œå¾…å»ºå¡”æ¥¼åæ ‡
+    ²ÎÊı£ºÊäÈëÎÄ¼ş¶ÔÏó
+    Êä³ö£ºµØÍ¼£¬ĞèÒªµÖ´ïµÄÄ¿±ê½Úµã×ø±ê£¬´ı½¨ËşÂ¥×ø±ê
 
-    ç¤ºä¾‹ï¼š
+    Ê¾Àı£º
 
     >>> from StringIO import StringIO
     >>> test_file = StringIO(\'\'\'3 4
@@ -124,9 +129,9 @@ def get_input(infile):
     '''
     it = iter(infile)
     line = it.next()
-    # åœ°å›¾è§„æ ¼
+    # µØÍ¼¹æ¸ñ
     M, N = map(int, line.split())
-    # æ„å»ºåœ°å›¾
+    # ¹¹½¨µØÍ¼
     graph = [[0 for j in range(N)] for i in range(M)]
     for i in range(M):
         flags = it.next().split()
@@ -135,78 +140,126 @@ def get_input(infile):
         for j in range(N):
             if flags[j]=='*':
                 graph[i][j] = 1
-    # å»ºç«‹ç›®æ ‡å¡”æ¥¼
+    # ½¨Á¢Ä¿±êËşÂ¥
     tower_x, tower_y = map(int, it.next().split())
     if tower_x>=M or tower_y>=N:
         raise TowerDefenseException('invalid input format')
     graph[tower_x][tower_y] = 1
     return graph, (M-1, N-1), (tower_x, tower_y)
 
-def get_next_positions(position):
+def get_next_positions(position, direction):
     '''
-    è·å–ç›¸é‚»èŠ‚ç‚¹åæ ‡
+    »ñÈ¡ÏàÁÚ½Úµã×ø±ê
+    position: µ±Ç°Î»ÖÃ
+    direction: µ±Ç°·½Ïò£º
+    >>> get_next_positions((0, 0), UP)
     '''
     x, y = position
-    # ä¼˜å…ˆå³ä¸‹è§’æ–¹å‘
-    return [(x-1, y), (x, y-1), (x+1,y), (x, y+1)]
+
+    direction_idx_map = {(0, 1):0, 
+        (1, 0):1,
+        (0, -1):2,
+        (-1, 0):3}
+
+    # ¸Ä³ÉÓÅÏÈµ±Ç°·½Ïò£¬²¢°´ÄãÊ±Õë·½Ïò½øĞĞ±éÀú
+    base = [(x, y+1), (x-1, y), (x, y-1), (x+1,y)] # ÓÒÉÏ×óÏÂ
+    result_map = [
+        [base[3],base[2],base[1],base[0]], # ÓÒ
+        [base[2],base[1],base[0],base[3]], # ÏÂ
+        [base[1],base[0],base[3],base[2]], # ×ó
+        [base[0],base[3],base[2],base[1]]  # ÉÏ
+    ]
+    '''
+    result_map = [
+        [base[0],base[1],base[2],base[3]], # ÓÒ
+        [base[1],base[2],base[3],base[0]], # ÏÂ
+        [base[2],base[3],base[0],base[1]], # ×ó
+        [base[3],base[0],base[1],base[2]]  # ÉÏ
+    ]
+    '''
+    return result_map[ (direction_idx_map[direction]) ]
+
+def calc_direction(p1, p2):
+    '''
+    ¼ÆËã´ÓÏàÁÚÁ½¸öÎ»ÖÃ£¬´Óp1µ½p2µÄ·½Ïò
+    '''
+    direction = [p2[0]-p1[0], p2[1]-p1[1]]
+    if direction[0]!=0 and direction[1]!=0:
+        direction[0] = 0
+    if direction[0]>1:direction[0]=1
+    if direction[0]<-1:direction[0]=-1
+    if direction[1]>1:direction[1]=1
+    if direction[1]<-1:direction[1]=-1
+    return tuple(direction)
 
 def traverse(graph, size, start, target):
     '''
-    ä½¿ç”¨å¾ªç¯å¯¹åœ°å›¾è¿›è¡Œæ·±åº¦ä¼˜å…ˆéå†
+    Ê¹ÓÃÑ­»·¶ÔµØÍ¼½øĞĞÉî¶ÈÓÅÏÈ±éÀú
 
-    è¾“å…¥ï¼šåœ°å›¾ï¼Œåœ°å›¾å¤§å°ï¼Œéœ€æŠµè¾¾çš„ç›®æ ‡èŠ‚ç‚¹åæ ‡
-    è¿”å›ï¼šboolå€¼ï¼Œè¡¨ç¤ºä»èµ·å§‹èŠ‚ç‚¹åˆ°ç›®æ ‡èŠ‚ç‚¹èƒ½å¦è”é€š
+    ÊäÈë£ºµØÍ¼£¬µØÍ¼´óĞ¡£¬ĞèµÖ´ïµÄÄ¿±ê½Úµã×ø±ê
+    ·µ»Ø£ºboolÖµ£¬±íÊ¾´ÓÆğÊ¼½Úµãµ½Ä¿±ê½ÚµãÄÜ·ñÁªÍ¨
 
-    ç¤ºä¾‹ï¼š
+    Ê¾Àı£º
     >>> traverse([[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], (3, 4), (0, 0), (2, 3))
     True
     >>> traverse([[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], (3, 4), (0, 0), (2, 3))
     False
     '''
-    # å¾…è®¿é—®èŠ‚ç‚¹æ ˆ
+    # ´ı·ÃÎÊ½ÚµãÕ»
     visit_queue = [start]
-    # è®°å½•å·²è®¿é—®èŠ‚ç‚¹åæ ‡
+    position = None
+    # ¼ÇÂ¼ÒÑ·ÃÎÊ½Úµã×ø±ê
     visited = {}
 
     def test_position(position):
         '''
-        æµ‹è¯•è¯¥èŠ‚ç‚¹æ˜¯å¦è¦åŠ å…¥å¾…è®¿é—®èŠ‚ç‚¹é˜Ÿåˆ—
+        ²âÊÔ¸Ã½ÚµãÊÇ·ñÒª¼ÓÈë´ı·ÃÎÊ½ÚµãÕ»
         '''
         x, y = position
         M,N = size
         return position not in visited and M>x>=0 and N>y>=0 and graph[x][y]==0
 
     while visit_queue:
-        logging.info('current visit_queue:' + str(visit_queue))
+        #logging.info('current visit_queue:' + str(visit_queue))
+        last_position = position
         position = visit_queue.pop()
+        if position in visited:
+            #logging.info('already visite:' + str(position))
+            continue
+        if last_position:
+            current_direction = calc_direction(last_position, position)
+        else:
+            current_direction = RIGHT # ³õÊ¼·½ÏòÏòÓÒ
         visited[position] = 1
-        logging.info('visit:' + str(position))
+        #logging.info('visit:' + str(position))
+        #print 'visit', position
         if position==target:
             return True
-        # äº§ç”Ÿç›¸é‚»èŠ‚ç‚¹å¹¶åŠ å…¥å¾…è®¿é—®èŠ‚ç‚¹é˜Ÿåˆ—ä¸­ã€‚
-        next_positions = filter(test_position, get_next_positions(position))
-        logging.info('enqueue:' + str(next_positions))
+        # ²úÉúÏàÁÚ½Úµã²¢¼ÓÈë´ı·ÃÎÊ½ÚµãÕ»ÖĞ¡£
+        next_positions = get_next_positions(position, current_direction)
+        next_positions = filter(test_position, next_positions)
+        #logging.info('enqueue:' + str(next_positions))
         visit_queue += next_positions
     return False
 
 def main(infile, outfile):
     '''
-    è§£å†³è¯¥é—®é¢˜çš„ä¸»å‡½æ•°
+    ½â¾ö¸ÃÎÊÌâµÄÖ÷º¯Êı
     '''
-    # è¯»å–é—®é¢˜è¾“å…¥
+    # ¶ÁÈ¡ÎÊÌâÊäÈë
     try:
         graph, target_position, tower_position = get_input(infile)
     except StopIteration, ex:
         raise TowerDefenseException('invalid input format')
     logging.info('parsed input graph:'+str(graph))
-    # æ·±åº¦ä¼˜å…ˆéå†åœ°å›¾
+    # Éî¶ÈÓÅÏÈ±éÀúµØÍ¼
     connected = traverse(graph, (len(graph), len(graph[0])), (0, 0), target_position)
-    # è¾“å‡ºç»“æœ
+    # Êä³ö½á¹û
     print >>outfile, tower_position[0], tower_position[1], connected and 'Yes' or 'No'
 
 if __name__ == '__main__':
     import sys, optparse
-    # è§£æå‘½ä»¤è¡Œè¾“å…¥
+    # ½âÎöÃüÁîĞĞÊäÈë
     parser = optparse.OptionParser(usage='%prog [-f] [-o] [-t]', version='%prog 1.1')
     parser.add_option("-f", "--file",
             help="input file, default stdin", default=sys.stdin)
@@ -218,13 +271,15 @@ if __name__ == '__main__':
             help="specify log file name, default ./solution.log", default="./solution.log")
     (options, args) = parser.parse_args()
 
+    '''
     logging.basicConfig(level=logging.DEBUG,
             format='%(asctime)s %(levelname)s %(funcName)s(%(filename)s:%(lineno)d) %(message)s',
             filename=options.logfilename,
             filemode='a')
+    '''
 
     if options.test:
-        # æ‰§è¡Œæ–‡æ¡£æµ‹è¯•
+        # Ö´ĞĞÎÄµµ²âÊÔ
         import doctest
         doctest.testmod(verbose=True)
     else: 
@@ -235,7 +290,7 @@ if __name__ == '__main__':
                 infile = open(infile)
             if isinstance(options.output, str):
                 outfile = open(outfile, 'w')
-        except IOError, ex: # æ‰“å¼€æ–‡ä»¶å¤±è´¥
+        except IOError, ex: # ´ò¿ªÎÄ¼şÊ§°Ü
             print ex
         try:
             main(infile, outfile)
