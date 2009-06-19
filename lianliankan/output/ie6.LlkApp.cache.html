@@ -24292,6 +24292,7 @@ function pygwtOnLoad(onLoadError, name) {
             prepare_app();
         } catch (exception) {
             onLoadError(exception, name);
+            throw exception;
         }
     else {
         prepare_app();
