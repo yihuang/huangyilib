@@ -84,7 +84,8 @@ class LlkCanvas(Canvas):
             self.draw()
 
     def onError(self, img=None):
-        console.log('load img error')
+        #console.log('load img error')
+        pass
 
 if __name__ == '__main__':
     canvas = LlkCanvas(500,500)
