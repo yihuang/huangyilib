@@ -13,11 +13,10 @@ def unsigned_range(a, b):
     else:
         return range(b+1, a)
 
-def unsigned_range1(a, b):
-    if a<b:
-        return range(a, b+1)
-    else:
-        return range(b, a+1)
+def get_range(max, a, b):
+    if a>b:
+        b,a = a,b
+    return range(a,b+1) + range(a-1,-1,-1) + range(b+1, max)
 
 def check(map, p1, p2):
     '''
@@ -25,7 +24,7 @@ def check(map, p1, p2):
     '''
     height = len(map)
     width = len(map[0])
-    def check_xline(x, y1, y2): # 横线
+    def check_xline(x, y1, y2): # 横线 检查两点之间可以连接
         if abs(y1-y2)<2:
             return True
         for i in unsigned_range(y1, y2):
@@ -40,35 +39,31 @@ def check(map, p1, p2):
                 return False
         return True
 
-    '''
-    assert(check_xline(0, 0, 4)==False)
-    assert(check_xline(5, 1, 4)==True)
-    assert(check_xline(1, 3, 4)==True)
-    assert(check_yline(3, 1, 3)==False)
-    assert(check_yline(3, 1, 2)==True)
-    assert(check_yline(2, 1, 5)==True)
-    assert(check_yline(4, 0, 2)==False)
-    '''
-
     x1,y1=p1
     x2,y2=p2
+
+    # 检查直接相连
     if x1==x2 and check_xline(x1, y1, y2):
         return [p1, p2]
     if y1==y2 and check_yline(y1, x1, x2):
         return [p1, p2]
 
-    for x in range(0,height):
-        y = y1
-        if check_yline(y, x, x1) and check_yline(y2, x, x2) and check_xline(x, y1, y2):
+    # 检查通过一个或两个中间点相连
+    for x in get_range(height, x1, x2):
+        # 两个中间点 不与目标重合 且 不为空，则检查失败
+        if not ((x==x1 or map[x][y1]==0) and (x==x2 or map[x][y2]==0)):
+            continue
+        if check_yline(y1, x, x1) and check_yline(y2, x, x2) and check_xline(x, y1, y2):
             if x==x1:
                 return [p1, (x,y2), p2]
             elif x==x2:
                 return [p1, (x,y1), p2]
             else:
                 return [p1, (x,y1), (x,y2), p2]
-    for y in range(0, width):
-        x = x1
-        if check_xline(x, y, y1) and check_xline(x2, y, y2) and check_yline(y, x1, x2):
+    for y in get_range(width, y1, y2):
+        if not ((y==y1 or map[x1][y]==0) and (y==y2 or map[x2][y]==0)):
+            continue
+        if check_xline(x1, y, y1) and check_xline(x2, y, y2) and check_yline(y, x1, x2):
             if y==y1:
                 return [p1, (x2,y), p2]
             elif y==y2:
@@ -100,3 +95,27 @@ test_case = [
 ]
 
 assert( check(test_case, (5,1),(1,4)) == [(5, 1), (5, 4), (1, 4)] )
+
+test_case = [
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,1,0,0],
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,0,0,0],
+    [0,1,0,0,2,0,0],
+    [0,0,0,0,0,0,0]
+]
+
+assert( check(test_case, (5,1),(1,4)) == False )
+
+test_case = [
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,1,0,0],
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,0,0,0],
+    [0,0,0,2,0,0,0],
+    [0,1,0,2,0,0,0],
+    [0,0,0,0,0,0,0]
+]
+
+assert( check(test_case, (5,1),(1,4)) == [(5, 1), (6, 1), (6, 4), (1, 4)] )
