@@ -42,10 +42,6 @@ class BasicBox(object):
         ctx.drawImage(self.img, self.img_x, self.img_y, uwidth, uheight,
                 self.x, self.y, uwidth, uheight)
 
-class StaticBox(BasicBox):
-    def update(self, ticks):
-        pass
-
 class LlkCanvas(Canvas):
     def __init__(self, width, height):
         super(LlkCanvas, self).__init__(width, height)

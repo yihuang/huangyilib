@@ -16,9 +16,12 @@ def unsigned_range(a, b):
 def get_range(max, a, b):
     if a>b:
         b,a = a,b
-    return range(a,b+1) + range(a-1,-1,-1) + range(b+1, max)
+    result = list(range(a,b+1))
+    result.extend(list(range(a-1,-1,-1)))
+    result.extend(list(range(b+1, max)))
+    return result
 
-def check(map, p1, p2):
+def checkllk(map, p1, p2):
     '''
     make sure y1<=y2
     '''
@@ -50,7 +53,7 @@ def check(map, p1, p2):
 
     # 检查通过一个或两个中间点相连
     for x in get_range(height, x1, x2):
-        # 两个中间点 不与目标重合 且 不为空，则检查失败
+        # 两个中间点 有一个 既不与目标重合且不为空，则检查失败
         if not ((x==x1 or map[x][y1]==0) and (x==x2 or map[x][y2]==0)):
             continue
         if check_yline(y1, x, x1) and check_yline(y2, x, x2) and check_xline(x, y1, y2):

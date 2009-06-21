@@ -35,10 +35,19 @@ class TestLianLianKan(unittest.TestCase):
             [0,0,0,2,0,0,0],
             [0,1,0,2,0,0,0],
             [0,0,0,0,0,0,0]], [(5,1),(1,4)], [(5, 1), (6, 1), (6, 4), (1, 4)]),
+
+            ([[0,0,0,2,0,0,0],
+            [0,0,0,2,1,0,0],
+            [0,0,0,2,0,0,0],
+            [0,0,0,2,0,0,0],
+            [0,0,0,2,0,0,0],
+            [0,1,0,2,0,0,0],
+            [0,0,0,0,0,0,0]], [(2,3),(1,4)], [(2, 3), (2, 4), (1, 4)]),
+
         ]
         for test_case in test_cases:
             map, (start, end), result = test_case
-            self.assertEqual( llk.check(map, start, end), result)
+            self.assertEqual( llk.checkllk(map, start, end), result)
 
 if __name__ == '__main__':
     unittest.main()
