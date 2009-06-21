@@ -52,13 +52,11 @@ function __pygwt_webModeFrameOnLoad(iframeWindow, name) {
   if (__pygwt_isHostPageLoaded && moduleInitFn) {
     var old = window.status;
     window.status = "Initializing module '" + name + "'";
-    //try {
-        moduleInitFn(null, name);
-        /*
+    try {
+        moduleInitFn(__pygwt_onLoadError, name);
     } finally {
         window.status = old;
     }
-    */
   } else {
     setTimeout(function() { __pygwt_webModeFrameOnLoad(iframeWindow, name); }, __pygwt_retryWaitMs);
   }
