@@ -26006,12 +26006,14 @@ var onExecutionError = function (exception, name) {
 
 function LlkApp_imported() {
     LlkApp.__name__ = '__main__';
-    try {
+    //try {
         modules['LlkApp'] = LlkApp('__main__');
+        /*
     } catch (exception) {
         sys.save_exception_stack();
         onExecutionError(exception, 'LlkApp');
     }
+    */
 }
 
 function prepare_app() {
