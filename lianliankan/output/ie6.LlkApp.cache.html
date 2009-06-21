@@ -26060,11 +26060,13 @@ function prepare_app() {
 
 function pygwtOnLoad(onLoadError, name) {
     if (onLoadError != null)
-        try {
+        //try {
             prepare_app();
+            /*
         } catch (exception) {
             onLoadError(exception, name);
         }
+        */
     else {
         prepare_app();
     }
