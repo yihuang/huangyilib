@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>成为组队网注册用户</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="Sun, 6 Mar 2005 01:00:00 GMT" />
+    <style type="text/css">
+      .hint {display:none;}
+      .ct {width:300px;border:1px solid #DCF5D5;background:#eef9eb;padding:5px 0 5px 5px;}
+    </style>
+    <link href="css/zudui.css" rel="stylesheet" type="text/css" />
+    <script src="js/packed_jquery0.js"></script>
+    <script src="js/packed_jquery.suggest0.js"></script>
+    <script src="js/zudui.js"></script>
+    <script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"></script>
+    <script type="text/javascript">
+      GS_googleAddAdSenseService("ca-pub-6419643701131111");
+      GS_googleEnableAllServices();
+    </script>
+
+    <link rel="shortcut icon" href="http://t.zudui8.com/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <div id="wrapper">
+
+      <div id="header">
+        <form id="ssform" name="ssform" method="get" action="/subject_search">
+          <a href="http://www.zudui8.com" title="组队网"><img src="http://t.douban.com/pics/logosmall.gif" alt="zudui8" class="logo"/></a><div id="nav"><a class="now" href="/"><span>首页</span></a> <a href="/group/">小组</a> <a href="/book/">读书</a> <a href="/movie/">电影</a> <a href="/music/">音乐</a> <a href="/event/">同城</a> <a target="_blank" href="http://9.zudui8.com" class="nine_nav">九点</a></div><div id="searbar">
+
+            <span>
+              <a class="arrow" href="javascript:void(0)">
+                <img src="http://t.zudui8.com/pics/down.gif" class="down" alt="" />
+                <img src="http://t.zudui8.com/pics/up.gif" class="up" alt="" /></a>
+              <div id="dsearch" class="hidesub">
+                <a href="/subject_search?cat=1001">书籍</a>
+                <a href="/subject_search?cat=1002">电影</a><a href="/subject_search?cat=1003">音乐</a><a href="/group/search">小组</a>
+
+                <a href="/people_search">成员</a>
+                <a href="/event/search">活动</a></div>
+            </span>
+            <span class="submit"><input class="butt minisubmit" style="letter-spacing:4px" type="submit" value="搜索"/>
+            </span>
+            <span>
+              <input class="j a_search_text" id="page_focus" name="search_text"
+                title="书籍、电影、音乐" type="text" size="22" maxlength="60" value="" />
+            </span>
+
+          </div><div class="clear"></div><div id="status"><div id="subnav"></div><br/></div>
+          <div class="clear"></div></form></div><h1>快速注册</h1><script type="text/javascript">
+        Douban.prettify_form(document.getElementById('ssform'));
+      </script>
+      <form id="lzform" name="lzform" method="post" action="/register">
+        <div id="content">
+          <div class="grid-16-8 clearfix">
+            <div class="article">
+
+              <div style="padding-left:50px;">
+                <span class="m">你的Email地址:</span><br/>
+
+                <input id="email" name="form_email" type="text" size="24" maxlength="60" value=""/>
+                <span id="e_hint" class="attn hint">请输入Email地址</span>
+                <br/>
+                <div id="e_correct">
+                  <span class="pl">用此邮箱接收确认邮件才能完成注册。</span>
+                </div>
+                <br/><br/>
+
+                <span class="m">给自己设一个密码:</span><br/>
+
+                <input id="password" name="form_password" type="password" size="10" maxlength="20" value=""/>
+                <span id="p_hint" class="attn hint">请输入密码</span>
+                <br/>
+                <span class="pl">最少4个字符，请使用英文字母（区分大小写）、符号或数字。</span>
+                <br/><br/><br/>
+                <input type="hidden" name="referer" value="http://www.zudui8.com/"/>
+                <span class="m">给自己起一个名号:</span><br/>
+
+                <input id="name" name="form_name" type="text" size="10" maxlength="15" value=""/>
+                <span id="n_hint" class="attn hint">请输入你的名号</span>
+                <br/>
+                <span class="pl">中、英文均可。</span>
+                <br/><br/>
+
+                <label>
+                  <input id="agreement" type="checkbox" name="form_agreement"/>
+                  我已经认真阅读并同意组队网的《<a href="/about?policy=agreement" target="_blank">使用协议</a>》。
+                </label>
+
+                <br/><br/>
+
+                <br/><input id="button" class="butt" type="submit" value="完成注册"/></div>
+              <script type="text/javascript">/*<![CDATA[*/
+                $("#nav").css("visibility","hidden");
+                $("#searbar").css("visibility","hidden");
+                var email=$("#email"),e_hint=$("#e_hint"),e_correct=$("#e_correct");
+                var passwd=$("#password"),p_hint=$("#p_hint");
+                var name=$("#name"),n_hint=$("#n_hint");
+                var button=$("#button");
+                var email_reg = /^[_\.0-9a-zA-Z+-]+@([0-9a-zA-Z]+[0-9a-zA-Z-]*\.)+[a-zA-Z]{2,4}$/;
+                var passwd_reg = /^(\w){4,20}/ ;
+                var email_list = new Array('163.com','126.com', '139.com', '188.com', '2008.china.com', '2008.sina.com', '21cn.com', '263.net', 'china.com', 'chinaren.com', 'citiz.net', 'eyou.com', 'foxmail.com', 'gmail.com', 'hongkong.com', 'hotmail.com', 'live.cn', 'live.com', 'mail.china.com', 'msn.com', 'my3ia.sina.com', 'qq.com', 'sina.cn', 'sina.com', 'sina.com.cn', 'sogou.com', 'sohu.com', 'tom.com', 'vip.163.com', 'vip.qq.com', 'vip.sina.com', 'vip.sohu.com', 'vip.tom.com', 'yahoo.cn', 'yahoo.com', 'yahoo.com.cn', 'yahoo.com.hk', 'yahoo.com.tw', 'yeah.net');
+
+                function DPA(s1, s2){
+                var m = new Array();
+                var i, j;
+                for(i=0; i < s1.length + 1; i++) m[i] = new Array(); // i.e. 2-D array
+
+                m[0][0] = 0; // boundary conditions
+
+                for(j=1; j <= s2.length; j++)
+                m[0][j] = m[0][j-1]-0 + 1; // boundary conditions
+
+                for(i=1; i <= s1.length; i++)                            // outer loop
+                {
+                m[i][0] = m[i-1][0]-0 + 1; // boundary conditions
+
+                for(j=1; j <= s2.length; j++)                         // inner loop
+                {
+                var diag = m[i-1][j-1];
+                if( s1.charAt(i-1) != s2.charAt(j-1) ) diag++;
+
+                m[i][j] = Math.min( diag,               // match or change
+                Math.min( m[i-1][j]-0 + 1,    // deletion
+                m[i][j-1]-0 + 1 ) ) // insertion
+                }//for j
+                }//for i
+                return m[s1.length][s2.length];
+                }
+
+                var email_value = '';
+                var e_name = '';
+                var e_domain = ''
+                var e_tip_on = 0;
+
+                function e_back(){
+                e_correct.html('<span class="pl">用此邮箱接收确认邮件才能完成注册。</span>');
+                passwd.focus();
+                e_tip_on = 0;
+                }
+                function e_set(){
+                email.attr('value', e_name + '@' + e_domain);
+                e_hint.fadeOut();
+                e_back();
+                }
+                function get_like(s){
+                r = 0;
+                v = s.split('@');
+                domain = v[1];
+                e_name = v[0];
+                dis = domain.length;
+                for (k=0; k < email_list.length; k++){
+                e = email_list[k];
+                d = DPA(domain, e);
+                if (d < dis){
+                dis = d;
+                e_domain = e;
+                }
+                }
+                if(dis && dis < 4){
+                r = 1;
+                }
+                return r;
+                };
+
+                function check_email(like){
+                e_hint.fadeOut();
+                r = 1;
+                s = email.attr('value');
+                if (!s){
+                r = 0;
+                e_hint.fadeIn();
+                }else if (!email_reg.exec(s)){
+                e_hint.html('请输入正确的Email地址');
+                e_hint.fadeIn();
+                r = 0;
+                }else{
+                if (like && get_like(s)){
+                as = ' <a id="yes_but" href="javascript:void(0)" onclick="e_set()">是</a>／<a href="javascript:void(0)" onclick="e_back()">不是</a>'
+                e_correct.html('<div class="ct"><span class="pl">你是否要输入' + e_name + '@</span>' + e_domain + as + '</div>');
+                $("#yes_but").focus();
+                e_tip_on = 1;
+                }else{
+                e_hint.fadeOut();
+                var url = '/j/register/is_registered?email='+s;
+                $.getJSON(url, function(j){
+                if (j.ok){
+                e_hint.html('该Email已经注册过');
+                e_hint.fadeIn();
+                email_value = s;
+                r = 0;
+                }
+                else{
+                r = 1;
+                }
+                })
+                }
+                }
+                email_value = email.attr('value');
+                return r
+                };
+                function check_password(){
+                r = 1;
+                if (e_tip_on) return r;
+                s = passwd.attr('value');
+                if (!s){
+                r = 0;
+                }else if(s.length < 4){
+                p_hint.html('最少4个字符');
+                r = 0;
+                }else if (!passwd_reg.exec(s)){
+                p_hint.html('请使用英文字母、符号或数字');
+                r = 0;
+                }
+                if (r){
+                p_hint.fadeOut();
+                }else{
+                p_hint.fadeIn();
+                }
+                return r
+                };
+                function check_name(){
+                r = 1;
+                s = name.attr('value');
+                if (!s){
+                n_hint.fadeIn();
+                r = 0;
+                }else{
+                n_hint.fadeOut();
+                }
+                return r
+                };
+                email.blur(function(){
+                check_email(1);
+                });
+                name.blur(function(){
+                check_name();
+                });
+                passwd.blur(check_password);
+                button.click(function(){
+                r1 = check_email(0);
+                r2 = check_password();
+                r3 = check_name();
+                if (r1 && r2 && r3){
+                return;
+                }else{
+                return false;
+                }
+                });
+                /*]]>*/</script>
+            </div>
+            <div class="aside">
+              <h2  >注册小贴士 &nbsp; &middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;
+                </h2><div class="pl">
+
+                <p>组队网绝不公开你的Email。</p>
+                <p>是否接受来自组队网的邮件提醒完全由你自己决定。</p>
+                <p>建议填写常用的Email地址，这样你就不会错过精彩内容。</p>
+                <br/>
+                <p>&gt; <a href="/login?redir=http%3A//www.zudui8.com/">已注册请登录</a></p>
+              </div>
+
+
+            </div>
+            <div class="extra">
+
+            </div>
+          </div>
+        </div>
+      </form>
+      <div id="footer">
+        <ul class="col-4 clearfix">
+          <li>
+            <span class="blue-link"><a onclick="moreurl(this, {sitemap:'/book/'})" href="/book/">读书</a></span>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/book/review/best/'})" href="/book/review/best/">热评</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/book/chart'})" href="/book/chart">排行榜</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/book/browse'})" href="/book/browse">分类浏览</a>
+          </li>
+
+
+          <li>
+            <span class="blue-link"><a onclick="moreurl(this, {sitemap:'/music/'})" href="/music/">音乐</a></span>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/artists/'})" href="/artists/">音乐人</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/music/review/best/'})" href="/music/review/best/">热评</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/music/chart'})" href="/music/chart">排行榜</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/music/tag/'})" href="/music/tag/">分类浏览</a>
+
+          </li>
+
+
+          <li>
+            <span class="blue-link"><a onclick="moreurl(this, {sitemap:'/movie/'})" href="/movie/">电影</a></span>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/movie/review/best/'})" href="/movie/review/best/">热评</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/movie/chart'})" href="/movie/chart">排行榜</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/movie/tag/'})" href="/movie/tag/">分类浏览</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/movie/tv'})" href="/movie/tv">电视剧</a>
+          </li>
+
+
+          <li>
+            <span class="blue-link"><a onclick="moreurl(this, {sitemap:'/event/'})" href="/event/">同城</a></span>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/hosts/'})" href="/hosts/">主办方</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/location/world/'})" href="/location/world/">其他城市</a>&nbsp;-&nbsp;<a onclick="moreurl(this, {sitemap:'/online/'})" href="/online/">线上活动</a>
+          </li>
+
+        </ul>
+
+        <span id="icp" class="fleft gray-link">&copy; 2005－2009 zudui8.com, all rights reserved
+          &nbsp;[<a href="http://www.miibeian.gov.cn/">京ICP证090015号</a>]
+        </span>
+
+        <span class="fright">
+          <a href="/about">关于组队网</a>
+          · <a href="/about?topic=contactus">联系我们</a>
+          · <a href="/about?policy=disclaimer">免责声明</a>
+          · <a href="/help/">帮助中心</a>
+
+          · <a href="/service/">组队网服务(API)</a>
+          · <a href="/partner/">品牌合作</a>
+        </span>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.write(unescape("%3Cscript src='http://www.google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+      try {
+      var _ga = _gat._getTracker("UA-7019765-1");
+      _ga._addOrganic("baidu","word");
+      _ga._addOrganic("soso","w");
+      _ga._addOrganic("3721","name");
+      _ga._addOrganic("yodao","q");
+      _ga._addOrganic("vnet","kw");
+      _ga._addOrganic("sogou","query");
+      _ga._addIgnoredOrganic("组队网");
+      _ga._addIgnoredOrganic("zudui8");
+      _ga._addIgnoredOrganic("组队网");
+      _ga._addIgnoredOrganic("www.zudui8.com");
+      _ga._trackPageview("/register");
+      } catch(err) {}
+    </script>
+  </body>
+</html>
