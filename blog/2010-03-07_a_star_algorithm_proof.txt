@@ -1,0 +1,41 @@
+===========
+A*算法证明
+===========
+
+算法描述
+---------
+
+只要存在最短路径，A* 算法就可以第一时间找到。
+
+.. python::
+
+    from heapq import heappop,heappush
+    openset = [start]
+    closeset = set()
+    while openset:
+        node = heappop(openset)
+        if node==target:
+            return node
+        if node.pos in closeset:
+            continue
+        closeset.add(node.pos)
+        for child in node.children():
+            child.hsrc = node.hsrc + 1
+            child.htarget = straight_distance(child, target)
+            child.hvalue = child.hsrc + child.htarget
+            # sort by hvalue
+            heappush(openset, child) 
+
+证明
+-----
+
+* 定理：A* 算法找到的第一条路径就是最短路径
+
+证明(反证法)：
+
+    假设最短路径上节点集合A为：n1,n2,n3,...,ni,...,nm，并假设算法通过非最短路径路径p走到终点，则终点target.hvalue==len(p)
+
+    另外因为集合A中的节点和起点都是连通的，故其中的每一条路径都有且只有部分节点在openset中，假设节点ni在openset中且其所在最短路径上的后继节点n(i+1)不在openset中
+
+    首先按照算法要求 ni.hvalue<=实际最短路径长度<len(p)=target.hvalue，也就是说 ni.hvalue<target.hvalue，按照算法实现，ni应该会比target节点先被访问到并扩展n(i+1)节点。产生矛盾，故原定理正确。
+
