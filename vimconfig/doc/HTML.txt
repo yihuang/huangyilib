@@ -1,5 +1,5 @@
 *HTML.txt*	Set of HTML/XHTML macros, menus and toolbar buttons.
-		Last change: 2008 Jun 18
+		Last change: 2010 Jun 02
 		Author: Christian J. Robinson
 
 						*HTML.vim* *HTML-macros*
@@ -62,7 +62,7 @@ example, if you're within <I></I> and type |;em| it will assume you want
 	typing ;& in insert mode will insert a literal & character.
 	(In actuality this mapping is defined as |g:html_map_leader| +
 	|g:html_map_entity_leader| to insert whatever is in
-	|g:html_map_entity_leader|.) (See also |n_;&|)
+	|g:html_map_entity_leader|.) (Also see |n_;&|)
 
 				*html-<Tab>* *html-tab* *html-CTRL-I*
 				*i_html-<Tab>* *i_html-tab* *i_html-CTRL-I*
@@ -109,7 +109,7 @@ example, if you're within <I></I> and type |;em| it will assume you want
 	*disable-HTML-macros*	*HTML-macros-disable*	*HTML-disable-macros*
 	*disable-HTML-mappings*	*HTML-mappings-disable*	*HTML-disable-mappings*
 							*:HTMLmappings*
-:HTML[mappings] {disable/off/enable/on}
+:HTML[mappings] {disable/off/enable/on/html/xhtml}
 	This command allows the HTML macros to be disabled and re-enabled.
 	This is useful for editing inline PHP, JavaScript, etc. where you
 	would want to be able to type literal ";", "&" and tab characters
@@ -119,6 +119,12 @@ example, if you're within <I></I> and type |;em| it will assume you want
 	|HTMLmapo()|--including all of the mappings defined by this
 	script--are disabled/enabled when this command is used, regardless of
 	what |g:html_map_leader| is set to.
+
+	You may also use this command to switch the mappings into HTML or
+	XHTML mode.
+
+	The argument to this command can be abbreviated to the first character
+	rather than the full word.
 
 ==============================================================================
 2. Customization Variables		*html-variables* *html-configuration*
@@ -566,7 +572,7 @@ another character of your preference.  See |g:html_map_leader|.
 
 	This mapping is only defined if MangleImageTag.vim is installed,
 	available with installation instructions here:
-	http://www.infynity.spodzone.com/vim/HTML/
+	http://christianrobinson.name/vim/HTML/
 							*i_;ol* *v_;ol* *n_;ol*
 ;ol	Ordered (numbered) list (<OL><CR></OL>). (|n_;|)
 							*i_;pp* *v_;pp* *n_;pp*
@@ -814,6 +820,7 @@ C-cedilla		&Ccedil;	&C,		*i_&C,*
 c-cedilla		&ccedil;	&c,		*i_&c,*
 O-slash			&Oslash;	&O/		*i_&O/*
 o-slash			&oslash;	&o/		*i_&o/*
+Szlig			&szlig;		&sz		*i_&sz*
 Left single arrow	&larr;		&la		*i_&la*
 Right single arrow	&rarr;		&ra		*i_&ra*
 Up single arrow		&uarr;		&ua		*i_&ua*
@@ -889,46 +896,81 @@ You can use a browser to preview your current HTML document.  (See
 |html-author-notes|)
 
 
-For Windows:
-								*n_;db*
+
+For Windows:				*browser-control-windows*
+								*n_;db-windows*
 ;db	Call the default browser on the current file.
 								*n_;ie*
 ;ie	Call Explorer on the current file.
 
 
-For Unix:
+For Mac OS X:				*browser-control-macos*
 
 The following mappings are only defined if you have properly installed the
 browser_launcher.vim script, available with installation instructions here:
-http://www.infynity.spodzone.com/vim/HTML/
-								*n_;ff*
+http://christianrobinson.name/vim/HTML/
+
+Opening new tabs and windows depends on the built-in Graphic User Interface
+Scripting architecture of Mac OS X which comes disabled by default. You can
+activate GUI Scripting by selecting the checkbox "Enable access for assistive
+devices" in the Universal Access preference pane.
+								*n_;db-macos*
+;db	Call the default browser on the current file.
+								*n_;ff-macos*
 ;ff	Make Firefox view the current file, starting Firefox if it is not
 	running.
-								*n_;nff*
+								*n_;nff-macos*
 ;nff	Same as |;ff|, but start a new browser window.
-								*n_;tff*
+								*n_;tff-macos*
+;tff	Same as |;nff|, but open a new tab.
+								*n_;oa-macos*
+;oa	Make Opera view the current file, starting Opera if it is not running.
+								*n_;noa-macos*
+;noa	Same as |;oa|, but start a new browser window.
+								*n_;toa-macos*
+;toa	Same as |;noa|, but open a new tab.
+								*n_;sf*
+;sf	Make Safari view the current file, starting Safari if it is not running.
+								*n_;nsf*
+;nsf	Same as |;sf|, but start a new browser window.
+								*n_;tsf*
+;tsf	Same as |;nsf|, but open a new tab.
+
+
+For Unix:				*browser-control-unix*
+
+The following mappings are only defined if you have properly installed the
+browser_launcher.vim script, available with installation instructions here:
+http://christianrobinson.name/vim/HTML/
+								*n_;ff-unix*
+;ff	Make Firefox view the current file, starting Firefox if it is not
+	running.
+								*n_;nff-unix*
+;nff	Same as |;ff|, but start a new browser window.
+								*n_;tff-unix*
 ;tff	Same as |;nff|, but open a new tab.
 								*n_;mo*
 ;mo	Make Mozilla view the current file, starting Mozilla if it is not
-	running.
+	running. (Deprecated!)
 								*n_;nmo*
-;nmo	Same as |;mo|, but start a new browser window.
+;nmo	Same as |;mo|, but start a new browser window. (Deprecated!)
 								*n_;tmo*
-;tmo	Same as |;nmo|, but open a new tab.
+;tmo	Same as |;nmo|, but open a new tab. (Deprecated!)
 								*n_;ne*
 ;ne	Make Netscape view the current file, starting Netscape if it is not
-	running.
+	running. (Deprecated!)
 								*n_;nne*
-;nne	Same as |;ne|, but start a new browser window.
+;nne	Same as |;ne|, but start a new browser window. (Deprecated!)
 
 Note: If Firefox and/or Mozilla and/or Netscape are running, these mappings
 may behave somewhat unexpectedly, due to the fact that Firefox, Mozilla and
-Netscape use the same remote protocol IDs.
-								*n_;oa*
+Netscape use the same remote protocol IDs.  (Support for Mozilla and Netscape
+is deprecated and will be abandoned in the future.)
+								*n_;oa-unix*
 ;oa	Make Opera view the current file, starting Opera if it is not running.
-								*n_;noa*
+								*n_;noa-unix*
 ;noa	Same as |;oa|, but start a new browser window.
-								*n_;toa*
+								*n_;toa-unix*
 ;toa	Same as |;noa|, but open a new tab.
 								*n_;ly*
 ;ly	Use lynx to view the current file.  This behaves like |;nly| if the Vim
@@ -948,7 +990,7 @@ Netscape use the same remote protocol IDs.
 
 
 :SetIfUnset {variable} {value}				*:SetIfUnset*
-This calls |SetIfUnset()|.
+	This command calls |SetIfUnset()|.
 
 
 Functions used by the HTML mappings:			*html-functions*
