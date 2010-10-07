@@ -5,10 +5,6 @@ pygtk.require('2.0')
 import math, cairo, gtk, gobject
 
 class Board(gtk.DrawingArea):
-    #__gsignals__ = {
-    #    'expose-event':'override',
-    #}
-
     def __init__(self):
         super(Board, self).__init__()
         self.connect('motion_notify_event', self.motion_notify_event)
@@ -18,13 +14,6 @@ class Board(gtk.DrawingArea):
                 | gtk.gdk.POINTER_MOTION_HINT_MASK
                 )
         self.points = []
-
-    #def do_expose_event(self, event):
-    #    cr = self.window.cairo_create()
-    #    cr.rectangle(event.area.x, event.area.y,
-    #            event.area.width, event.area.height)
-    #    cr.clip()
-    #    self.draw(cr, *self.window.get_size())
 
     def motion_notify_event(self, sender, event):
         if event.is_hint:
@@ -36,7 +25,8 @@ class Board(gtk.DrawingArea):
 
     def line(self, p1, p2, alpha):
         cr = self.window.cairo_create()
-        cr.set_source_rgba(0,0,0,alpha)
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        cr.set_source_rgba(0,0,0,.5)
         cr.move_to(*p1)
         cr.line_to(*p2)
         cr.stroke()

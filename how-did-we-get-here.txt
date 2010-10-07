@@ -1,0 +1,429 @@
+==============================
+How Did We Get Here? 往事回顾
+==============================
+
+.. contents::
+
+Diving In 引子
+===============
+
+Recently, I stumbled across a quote from a Mozilla developer about the tension inherent in creating standards:
+
+最近我从一个Mozilla开发者那看到一段话，是说标准制定过程中面临的紧张局面：
+
+    Implementations and specifications have to do a delicate dance together. You don’t want
+    implementations to happen before the specification is finished, because people start de-
+    pending on the details of implementations and that constrains the specification. How-
+    ever, you also don’t want the specification to be finished before there are implementations
+    and author experience with those implementations, because you need the feedback.
+
+    实现和规范必须很小心地配合。你不能让实现在规范之前完成，因为那时人们就会开始依赖实现细节，
+    进而限制规范的制定。你也不能等规范彻底完善后再着手编写实现，因为你需要实现带来的反馈。
+
+There is unavoidable tension here, but we just have to muddle on through.
+Keep this quote in the back of your mind, and let me explain how HTML5 came to be.
+
+这是一个无法避免的紧张局面，但我们实在没有别的高招了。
+请您带着这段话，听我来解释HTML5的规范是如何形成的。
+
+MIME Types MIME 类型
+=====================
+
+This book is about HTML5, not previous versions of HTML, and not any version of
+XHTML. But to understand the history of HTML5 and the motivations behind it, you
+need to understand a few technical details first. Specifically, MIME types.
+
+这本书是关于HTML5的，不是旧版HTML，也不是任何版本的XHTML。但是要理解HTML5的历史和背后的动机，
+你得先了解一些技术细节，特别是 MIME 类型。
+
+Every time your web browser requests a page, the web server sends a number of headers
+before it sends the actual page markup. These headers are normally invisible, although
+there are a number of web development tools that will make them visible if you’re
+interested. The headers are important, because they tell your browser how to interpret
+the page markup that follows. The most important header is called `Content-Type`, and
+it looks like this:
+
+web浏览器每一次请求页面，web服务器都会先返回一系列头，接着再返回实际的页面内容。
+这些头通常是看不见的，当然如果你感兴趣的话，也有很多web开发工具可以查看这些头。
+这些头的重要性在于他们会告诉浏览器如何解释后面跟着的页面内容。
+最重要的头叫做 `Content-Type` ，它看起来是这样的： ::
+
+    Content-Type: text/html
+
+text/html is called the “content type” or “MIME type” of the page. This header is the
+only thing that determines what a particular resource truly is, and therefore how it
+should be rendered. Images have their own MIME types (image/jpeg for JPEG images,
+image/png for PNG images, and so on). JavaScript files have their own MIME type. CSS
+stylesheets have their own MIME type. Everything has its own MIME type. The Web
+runs on MIME types.
+
+`text/html` 就叫做页面的"content type"或者"MIME类型"。这个头决定了资源真实的类型，
+随后浏览器才知道如何去渲染。图片有图片的MIME类型，JavaScript有JavaScript的MIME类型，
+CSS有CSS的MIME类型，所有资源都有它的MIME类型；整个web就是运转在各种MIME类型之上。
+
+Of course, reality is more complicated than that. Very early web servers (I’m talking
+web servers from 1993) didn’t send the `Content-Type` header, because it didn’t exist yet.
+(It wasn’t invented until 1994.) For compatibility reasons that date all the way back to
+1993, some popular web browsers will ignore the `Content-Type` header under certain
+circumstances. (This is called “content sniffing.”) But as a general rule of thumb, ev-
+erything you’ve ever looked at on the Web—HTML pages, images, scripts, videos,
+PDFs, anything with a URL—has been served to you with a specific MIME type in the
+`Content-Type` header.
+
+当然，现实的情况比这个要复杂。非常早期的web服务器（我指的是1993年的web服务器）不发送 `Content-Type` 头，
+因为那时候还没有这玩意呢（它是在1994年发明的）。出于兼容性的考虑，从那时候起一些浏览器
+就会在某些特定情况下忽略 `Content-Type` 头（这叫做“内容嗅探”）。
+但是作为一个通用规则，所有你在web上看到的东西——HTML页面，图片，脚本，视频，PDF文档，任何有URL的东西——
+在发送给你的时候都在 `Content-Type` 头里面指定了MIME类型。
+
+Tuck that under your hat. We’ll come back to it.
+
+请您把这段话也带着，后面我们还会回到这个话题。
+
+A Long Digression into How Standards Are Made 有点长的题外话：标准是如何形成的
+===============================================================================
+
+Why do we have an <img> element? I don’t suppose that’s a question you ask yourself
+very often. Obviously someone must have created it. These things don’t just appear out
+of nowhere. Every element, every attribute, every feature of HTML that you’ve ever
+used—someone created them, decided how they should work, and wrote it all down.
+These people are not gods, nor are they flawless. They’re just people. Smart people, to
+be sure. But just people.
+
+为什么会有 `<img>` 标签？大家平时可能不会去纠结这种问题。但是总该有个人创造了它吧，
+这些东西总不是从石头缝里蹦出来的。每一个元素，每一个属性，每一个你使用过的HTML的特性，
+都是被某个人创造出来的，他确定了它们的工作方式然后写下来。这些人不是上帝，也不是完人。
+他们也是普通人，可以肯定是聪明人，但也只是普通人而已。
+
+One of the great things about standards that are developed “out in the open” is that
+you can go back in time and answer these kinds of questions. Discussions occur on
+mailing lists, which are usually archived and publicly searchable. So, I decided to do a
+bit of “email archaeology” to try to answer the <img> element question. I had to go back
+to before there was an organization called the World Wide Web Consortium (W3C).
+
+开放标准最给力（伟大）的一个特点就是你可以回到过去搜寻这种问题的答案。讨论都在邮件列表中进行，
+而邮件列表通常都有存档而且可以搜索得到。所以我决定来点“邮件考古”，看能不能找到 `<img>` 标签的
+发明者。我得回到过去，那时候有个组织叫做万维网联盟（W3C）。
+
+I went back to the earliest days of the Web, when you could count the number of web
+servers on the fingers of both hands, and maybe a couple of toes.
+
+我回到了web最早期的岁月，那时候你只需要勾几下手指——也许得加上脚趾——就能算出总共有几台web服务器。
+
+On February 25, 1993, Marc Andreessen wrote:*
+
+1993年2月25号，Marc Andreessen写道：
+
+    I’d like to propose a new, optional HTML tag:
+
+    IMG
+
+    Required argument is SRC="url".
+
+    我想提议一个新的可选HTML标签： ::
+
+        IMG
+
+    必选参数是 `SRC="url"` 。
+
+    This names a bitmap or pixmap file for the browser to attempt to pull over the network
+    and interpret as an image, to be embedded in the text at the point of the tag’s occurrence.
+
+    它表示一个位图文件，浏览器会从网络上把它下载下来当作图片嵌入在标签所在的位置。
+
+    An example is:
+
+    <IMG SRC="file://foobar.com/foo/bar/blargh.xbm">
+
+    (There is no closing tag; this is just a standalone tag.)
+
+    给个例子： ::
+
+        <IMG SRC="file://foobar.com/foo/bar/blargh.xbm">
+
+    （这里没有闭合标签；它就是一个独立的标签）
+
+    This tag can be embedded in an anchor like anything else; when that happens, it becomes
+    an icon that’s sensitive to activation just like a regular text anchor.
+    Browsers should be afforded flexibility as to which image formats they support. Xbm
+    and Xpm are good ones to support, for example. If a browser cannot interpret a given
+    format, it can do whatever it wants instead (X Mosaic will pop up a default bitmap as a
+    placeholder).
+    
+    和其他内容一样，这个标签也可以嵌入在锚点里；这样的话，它就成为一个可点击的图标，正如其他常规的文本锚点。
+    应该让浏览器能够灵活选择支持哪些图像格式。比如支持Xbm和Xpm就不错。如果浏览器不能解释某个指定的格式，
+    它可以执行任意的替代行为（X Mosaic会显示一个默认的位图）。
+
+    This is required functionality for X Mosaic; we have this working, and we’ll at least be
+    using it internally. I’m certainly open to suggestions as to how this should be handled
+    within HTML; if you have a better idea than what I’m presenting now, please let me
+    know. I know this is hazy with regard to image format, but I don’t see an alternative than
+    to just say “let the browser do what it can” and wait for the perfect solution to come
+    along (MIME, someday, maybe).
+
+    对 X Mosaic 来说这是个必须的功能；我们已经实现了，至少会在内部使用。
+    对于如何与HTML结合的问题，我想听听大家的意见；如果你有比我更好的点子，请让我知道。
+    我知道在图像格式的问题上还有点含糊，但我想到的最好的办法就是“让浏览器去决定它能支持什么格式”
+    ，我静候完美解决方法的到来（也许，有一天，会是MIME类型吧）。
+
+This quote requires some explanation. Xbm and Xpm were popular graphics formats
+on Unix systems.
+
+我来解释一下，Xbm和Xpm是Unix系统上流行的图像文件格式。
+
+“Mosaic” was one of the earliest web browsers. (“X Mosaic” was the version that ran
+on Unix systems.) When he wrote this message in early 1993, Marc had not yet founded
+the company that made him famous, Mosaic Communications Corporation, nor had
+he started work on that company’s flagship product, “Mosaic Netscape.” (You may
+know them better by their later names, “Netscape Corporation” and “Netscape
+Navigator.”)
+
+“Mosaic“是最早的web浏览器之一（“X Mosaic“是它的Unix版本）。当他在1993年年初写下这封邮件的时候，
+Marc还没有成立那家让他一举成名的公司：马赛克通信公司(Mosaic Communications Corporation)，
+他也还没有开发这家公司的旗舰产品，“马赛克网景(Mosaic Netscape)”。
+（你可能更熟悉它们后来的名字：“网景公司(Netscape Corporation)”和“网景浏览器(Netscape Navigator)”）
+
+“MIME, someday, maybe” is a reference to content negotiation, a feature of HTTP
+where a client (like a web browser) tells the server (like a web server) what types of
+resources it supports (like image/jpeg) so the server can return something in the client’s
+preferred format. “The Original HTTP as defined in 1991” (the only version that was
+implemented in February 1993) did not have a way for clients to tell servers what kinds
+of images they supported, thus the design dilemma that Marc faced.
+
+“也许，有一天，会是MIME类型吧“ 说的是内容协商，它是HTTP协议的一个特性，客户端（比如web浏览器）可以告诉
+服务器（比如web服务器）它支持哪些类型的资源（比如 image/jpeg），
+这样服务器可以根据客户端的要求返回合适的格式。在1991年定义的“原始HTTP协议” （1993年那时只实现了这个版本）中，
+客户端没有办法去告诉服务器它支持哪些图像格式，这也就导致了Marc面临的设计难题。
+
+A few hours later, Tony Johnson replied:
+
+几小时之后，Tony Johnson回复到：
+
+    I have something very similar in Midas 2.0 (in use here at SLAC, and due for public release
+    any week now), except that all the names are different, and it has an extra argument
+    NAME="name". It has almost exactly the same functionality as your proposed IMG tag. e.g.,
+
+    <ICON name="NoEntry" href="http://note/foo/bar/NoEntry.xbm">
+
+    我在Midas 2.0（在SLAC内部使用，这几周就会公开发布）里面实现一个非常类似的东西，
+    除了名字不同，并且多一个参数 `NAME="name"` 。
+    功能上和你提议的 `IMG` 标签几乎一样。它是这样的： ::
+
+    <ICON name="NoEntry" href="http://note/foo/bar/NoEntry.xbm">
+
+    The idea of the name parameter was to allow the browser to have a set of “built in”
+    images. If the name matches a “built in” image it would use that instead of having to go
+    out and fetch the image. The name could also act as a hint for “line mode” browsers as
+    to what kind of a symbol to put in place of the image.
+
+    之所以有这个name参数，是想让浏览器可以有一套内置的图片，如果name参数和某个内置图片匹配，
+    就可以直接使用内置的图片，而不用额外去下载。
+    命令行浏览器也可以根据name参数来决定用什么符号来替代这张图片。
+
+    I don’t much care about the parameter or tag names, but it would be sensible if we used
+    the same things. I don’t much care for abbreviations, i.e., why not IMAGE= and SOURCE=. I
+    somewhat prefer ICON since it implies that the IMAGE should be smallish, but maybe
+    ICON is an overloaded word?
+    
+    我倒是不在乎参数和标签的名字，重要的是我们保持一致。我也不在乎一定要使用缩写，
+    比如说为什么不用 IMAGE= 和 SOURCE= 呢。
+    我有点倾向于 ICON 这个名字，因为它暗示了图片应该用小图，不过也许 ICON 这个词负载的含义有点太多。
+
+Midas was another early web browser, a contemporary of X Mosaic. It was cross-
+platform; it ran on both Unix and VMS. “SLAC” refers to the Stanford Linear
+Accelerator Center, now the SLAC National Accelerator Laboratory, which hosted the
+first web server in the United States (in fact, the first web server outside Europe). When
+Tony wrote this message, SLAC was an old-timer on the WWW, having hosted five
+pages on its web server for a whopping 441 days.
+
+Midas是和X Mosaic同时代的一个web浏览器。它是跨平台的；它在Unix和VMS上面都可以运行。
+“SLAC“是指 stanford Linear Accelerator Center，现在叫做 SLAC National Accelerator Laboratory，
+它搭建了美国第一台web服务器（也是欧洲以外第一台web服务器）。
+Tony写这封邮件的时候，SLAC已经是万维网的老前辈了，它的web服务器上部署了五个网页，服务了441天。
+
+Tony continued:
+
+Tony 继续写道：
+
+    While we are on the subject of new tags, I have another, somewhat similar tag, which I
+    would like to support in Midas 2.0. In principle it is:
+
+    <INCLUDE HREF="...">
+
+    说到新增标签，我还有另一个类似的标签，我想在Midas2.0里面支持它。理论上说它是这样的：
+
+    <INCLUDE HREF="...">
+
+    The intention here would be that the second document is to be included into the first
+    document at the place where the tag occurred. In principle the referenced document
+    could be anything, but the main purpose was to allow images (in this case arbitrary sized)
+    to be embedded into documents. Again the intention would be that when HTTP2 comes
+    along the format of the included document would be up for separate negotiation.
+
+    这个的目的是让第二个文档内嵌在第一个文档里面标签出现的位置，理论上说被引用的文档可以是任何东西，
+    但是主要目的是在文档里面嵌入图片（任何大小）。还有一个目的是当HTTP2到来的时候，
+    内嵌的文档格式可以通过独立的协商过程进行确定。
+
+“HTTP2” is a reference to Basic HTTP as defined in 1992. At this point, in early 1993,
+it was still largely unimplemented. The draft known as “HTTP2” evolved and was
+eventually standardized as “HTTP 1.0”. HTTP 1.0 did include request headers for
+content negotiation, a.k.a. “MIME, someday, maybe.”
+
+“HTTP2”是指1992年定义的“基础HTTP协议“。那个时候，也就是1993年年初，大部分都还没有实现。
+那时草案被称为“HTTP2”，经过演化，最终被标准化为“HTTP 1.0”。HTTP 1.0 确实包含了用于内容协商的请求头，
+也就是前面说到过的完美解决方案 “也许，有一天，会是MIME类型吧”。
+
+Tony went on:
+
+Tony 还在写：
+
+    An alternative I was considering was:
+
+    <A HREF="..." INCLUDE>See photo</A>
+
+    I don’t much like adding more functionality to the <A> tag, but the idea here is to maintain
+    compatibility with browsers that can not honour the INCLUDE parameter. The intention
+    is that browsers which do understand INCLUDE, replace the anchor text (in this case “See
+    photo”) with the included document (picture), while older or dumber browsers ignore
+    the INCLUDE tag completely.
+    
+    我在考虑的一个替代方案是：
+
+    <A HREF="..." INCLUDE>See photo</A>
+    
+    我不太喜欢给 `<a>` 标签加太多功能，但是这个点子是为了和哪些不懂 `INCLUDE` 参数的浏览器保持兼容。
+    让懂 `INCLUDE` 的浏览器把锚点的文本（也就是“See photo”）替换成嵌入的文档（图片） ，
+    同时更老或者更笨的浏览器可以完全忽略 `INCLUDE` 标签。   
+
+This proposal was never implemented, although the idea of providing text if an image
+is missing is an important accessibility technique that was missing from Marc’s initial
+<IMG> proposal. Many years later, this feature was bolted on as the <img alt>
+attribute, which Netscape promptly broke by erroneously treating it as a tooltip.
+
+这个提议从来没有被实现过，虽然给缺失的图片提供替代文本的想法确实是一个能提高可用性的重要技术，
+而且在Marc最初的 `<IMG>` 提议里面是没有的。许多年以后，这个特性被作为 `<img alt>` 属性实现了，
+而Netscape马上就错误地把它实现成一个提示。
+
+A few hours after Tony posted his message, Tim Berners-Lee responded:
+
+Tony发送消息后几个小时，Tim Berners-Lee 回复道：
+
+    I had imagined that figures would be represented as 
+
+    我想过图形可以用下面这种方式来表现 ::
+
+    <a name=fig1 href="fghjkdfghj" REL="EMBED, PRESENT">Figure </a>
+
+    where the relationship values mean
+
+    REL 的含义如下 ::
+
+        EMBED       Embed this here when presenting it
+        PRESENT     Present this whenever the source document is presented
+
+        EMBED       展现时内嵌进来
+        PRESENT     在源文档展现的时候展现
+
+    Note that you can have various combinations of these, and if the browser doesn’t support
+    either one, it doesn’t break.
+
+    注意到你可以对它们进行不同的组合，而且就算浏览器一个都不支持，也不会有什么副作用。
+
+    [I] see that using this as a method for selectable icons means nesting anchors. Hmmm.
+    But I hadn’t wanted a special tag.
+
+    [I] 可以看到，使用这个方法展示可选择的图标的话，意味着需要使用嵌套的的锚点。嗯～，不过
+    我还是不想引入一个专门的标签。
+
+This proposal was never implemented, but the rel attribute is still around (see “Friends
+and (Link) Relations” on page 36).
+
+这个提议也从未实现过，但是 rel 树形仍然健在（参考36页的“Friends and (Link) Relations”）
+
+Jim Davis added:
+
+Jim Davis 补充道:
+
+    It would be nice if there was a way to specify the content type, e.g. 
+
+    如果可以指定 content type的话就好了，像这样的： ::
+
+    <IMG HREF="http://nsa.gov/pub/sounds/gorby.au" CONTENT-TYPE=audio/basic>
+
+    But I am completely willing to live with the requirement that I specify the content type
+    by file extension.
+
+    不过通过文件扩展名来指定content type的话，我也没有意见。
+
+This proposal was never implemented, but Netscape did later add support for arbitrary
+embedding of media objects with the <embed> element.
+
+这个提议同样没有实现过，不过Netscape后来确实增加了一个 `<embed>` 标签可以嵌入任意媒体对象。
+
+Jay C. Weber asked:
+
+Jay C. Weber 问道:
+
+    While images are at the top of my list of desired medium types in a WWW browser, I
+    don’t think we should add idiosyncratic hooks for media one at a time. Whatever hap-
+    pened to the enthusiasm for using the MIME typing mechanism?
+
+    尽管图片是我在WWW浏览器里面最想要的媒体类型，我还是觉得我们不应该给每一个媒体类型都添加专门的功能。
+    使用基于MIME类型的机制怎么了？
+
+Marc Andreessen replied:
+
+Marc Andreessen 回复道:
+
+    This isn’t a substitute for the upcoming use of MIME as a standard document mecha-
+    nism; this provides a necessary and simple implementation of functionality that’s needed
+    independently from MIME.
+
+    这不是MIME替代品，MIME将会成为一个标准的文档机制；这里讨论的是给独立于MIME的功能提供一个必要且简单的实现。
+
+Jay C. Weber responded:
+
+Jay C. Weber 回复道:
+
+    Let’s temporarily forget about MIME, if it clouds the issue. My objection was to the
+    discussion of “how are we going to support embedded images” rather than “how are we
+    going to support embedded objections in various media.”
+
+    我们先把MIME丢一边吧，以免掩盖了问题的本质。我的异议是针对“要如何支持嵌入的图像”，
+    而不是“要如何支持嵌入不同媒体的对象”。
+
+    Otherwise, next week someone is going to suggest “let’s put in a new tag <AUD
+    SRC="file://foobar.com/foo/bar/blargh.snd">” for audio.
+    
+    否则，下周又会有人要提议说：“我们再给音频加个新标签吧 `<AUD SRC="file://foobar.com/foo/bar/blargh.snd">`”。
+
+    There shouldn’t be much cost in going with something that generalizes.
+
+    搞个通用的东西也不会太麻烦。
+
+With the benefit of hindsight, it appears that Jay’s concerns were well founded. It took
+a little more than a week, but HTML5 did finally add new <video> and <audio> elements.
+
+现在看起来，Jay的担心还是有道理的。虽然花了不止一周的时间，
+不过 HTML5 最终还是添加了新的 `<video>` 和 `<audio>` 元素。
+
+Responding to Jay’s original message, Dave Raggett said:
+
+作为对 Jay 原始邮件的回应，Dave Raggett 说到：
+
+    True indeed! I want to consider a whole range of possible image/line art types, along with
+    the possibility of format negotiation. Tim’s note on supporting clickable areas within
+    images is also important.
+
+    确实如此，我想要考虑一系列的图像/命令行艺术类型，加上格式协商的可能性。
+    Tim提到的在图片里面支持可点击热点的想法也很重要。
+
+Later in 1993, Dave proposed HTML+ as an evolution of the HTML standard. The
+proposal was never implemented, and it was superseded by HTML 2.0. HTML 2.0 was
+a “retro-spec,” which means it formalized features already in common use: “This
+specification brings together, clarifies, and formalizes a set of features that roughly
+corresponds to the capabilities of HTML in common use prior to June 1994.”
+
+1993年后期，Dave提出了一个HTML标准的演化版HTML+。这个提议没有被实现过，而是被HTML2.0所取代。
+HTML2.0是一个“复古规范”，因为它只是把那些已经在大量使用的特性规范下来：“这份协议收集，澄清，
+并形式化了一组特性，基本上都是对应于1994年6月以前已经被广泛使用的那些HTML特性”。
