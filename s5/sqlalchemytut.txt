@@ -1,0 +1,291 @@
+.. include:: <s5defs.txt>
+
+====================
+SQLAlchemy Tutorial
+====================
+
+:Authors: 黄毅 <yi.codeplayer@gmail.com>
+:Date: $Date: 2010年 09月 24日 星期五 14:27:51 $
+
+层次结构
+=========
+
+.. dotgraph:: architecture
+    :align: center
+
+    digraph {
+        node [shape=box style="rounded(2) filled" color="#6666ff" fontcolor="#ffff66" width=3 height=1 fontsize=34];
+        ORM -> Core -> DBAPI [penwidth=20 color="#b266ff"];
+    }
+
+层次结构
+=========
+
+.. dotgraph:: architecture_detail
+    :align: center
+
+    digraph {
+        node [shape=box style="rounded(2) filled" color="#6666ff" fontcolor="#ffff66" width=3 height=.8 fontsize=34];
+        edge [penwidth=20 color="#b266ff"];
+        subgraph cluster_0 {
+            style="filled";
+            color=lightgrey;
+            label="Core";
+            labeljust="l";
+            "SQL Exp" -> {Schema Dialect};
+        }
+        ORM -> "SQL Exp";
+        ORM -> Schema;
+        {Schema Dialect} -> DBAPI;
+    }
+
+Core Features
+==============
+
+* SQL written in Python Expression
+* Auto Schema Reflection
+* 支持各种SQL方言和后端DBAPI
+* 自定义任意SQL语句片段
+* 定制SQL语句
+
+SELECT
+======
+
+.. class:: incremental
+.. class:: code-list
+
+* .. code-block:: python
+
+    >>> s = select([users])
+    >>> print s
+
+* .. code-block:: sql
+
+    SELECT users.id, users.name, users.fullname
+    FROM users
+    ()
+
+* .. code-block:: python
+
+    >>> for row in s.execute(): print row
+
+* ::
+
+    (1, u'jack', u'Jack Jones')
+    (2, u'wendy', u'Wendy Williams')
+
+OPERATOR
+========
+
+.. class:: incremental
+.. class:: code-list tiny
+
+* .. code-block:: python
+
+    >>> print users.c.id==addresses.c.user_id
+
+* .. code-block:: sql
+
+    users.id = addresses.user_id
+
+* .. code-block:: python
+
+    >>> print users.c.id != 7
+
+* .. code-block:: sql
+
+    users.id != :id_1
+
+* .. code-block:: python
+
+    >>> print users.c.name == None
+
+* .. code-block:: sql
+
+    users.name IS NULL
+
+* .. code-block:: python
+
+    >>> print 'fred' > users.c.name
+
+* .. code-block:: sql
+
+    users.name < :name_1
+
+* .. code-block:: python
+
+    >>> print users.c.id + addresses.c.id
+
+* .. code-block:: sql
+
+    users.id + addresses.id
+
+* .. code-block:: python
+
+    >>> print users.c.name + users.c.fullname
+
+* .. code-block:: sql
+
+    users.name || users.fullname
+
+* .. code-block:: python
+
+    >>> print (users.c.name + users.c.fullname)\
+            .bind=create_engine('mysql://')
+
+* .. code-block:: sql
+
+    concat(users.name, users.fullname)
+
+* .. code-block:: python
+
+    >>> print (users.c.name + users.c.fullname)\
+            .bind=create_engine('mssql://')
+
+* .. code-block:: sql
+
+    users.name + users.fullname
+
+示例：取基金公告 Tables
+========================
+
+.. class:: tiny
+.. code-block:: python
+
+    >>> meta = MetaData()
+    >>> titles = Table('disc01', meta,
+    ...     Column('seq', Integer, primary_key=True),
+    ...     Column('title', String(255)),
+    ...     Column('isvalid', Boolean),
+    ...     Column('mtime', DateTime),
+    ... )
+    >>> content = Table('disc02', meta,
+    ...     Column('vseq', ForeignKey(titles.c.seq), primary_key=True),
+    ...     Column('content', Text),
+    ...     Column('isvalid', Boolean),
+    ... )
+    >>> fundinfo = Table('fund01', meta,
+    ...     Column('fundcode', Integer, primary_key=True),
+    ...     Column('fundname', String(255)),
+    ...     Column('isvalid', Boolean),
+    ... )
+    >>> fundrel = Table('disc06', meta,
+    ...     Column('vseq', ForeignKey(titles.c.seq)),
+    ...     Column('fundcode', ForeignKey(fundinfo.c.fundcode)),
+    ...     Column('isvalid', Boolean),
+    ... )
+
+示例：取基金公告 Join
+======================
+
+.. class:: incremental
+.. class:: code-list
+
+* .. code-block:: python
+
+    >>> tables=[titles, content, fundrel, fundinfo]
+    >>> joins=reduce(lambda r,t:r.join(t), tables)
+    >>> print joins
+
+* .. code-block:: sql
+
+    disc01 JOIN disc02 ON disc01.seq = disc02.vseq
+    JOIN disc06 ON disc01.seq = disc06.vseq
+    JOIN fund01 ON fund01.fundcode=disc06.fundcode
+
+* .. code-block:: python
+
+    >>> cond=and_(*(t.c.isvalid==True for t in tables\
+                    if hasattr(t.c, 'isvalid')))
+    >>> print cond, cond.compile().params
+
+* .. code-block:: sql
+
+    disc01.isvalid = :isvalid_1
+    AND disc02.isvalid = :isvalid_2
+    AND disc06.isvalid = :isvalid_3
+    AND fund01.isvalid = :isvalid_4
+
+  .. code-block:: python
+
+    {u'isvalid_4': True, u'isvalid_2': True,
+    u'isvalid_3': True, u'isvalid_1': True}
+
+示例：取基金公告 Join
+========================
+
+.. class:: incremental
+.. class:: code-list
+
+* .. code-block:: python
+
+    >>> query = select(tables)\
+        .select_from(joins)\
+        .where(cond)\
+        .order_by(titles.c.mtime)
+    >>> print query
+
+* .. code-block:: sql
+
+    SELECT disc01.seq, disc01.title, disc01.isvalid, disc01.mtime, disc02.vseq, disc
+    02.content, disc02.isvalid, disc06.vseq, disc06.fundcode, disc06.isvalid, fund01
+    .fundcode, fund01.fundname, fund01.isvalid 
+    FROM disc01 JOIN disc02 ON disc01.seq = disc02.vseq JOIN disc06 ON disc01.seq =
+    disc06.vseq JOIN fund01 ON fund01.fundcode = disc06.fundcode 
+    WHERE disc01.isvalid = :isvalid_1 AND disc02.isvalid = :isvalid_2 AND disc06.isvalid = :isvalid_3 AND fund01.isvalid = :isvalid_4
+    ORDER BY disc01.mtime
+
+示例：CMS Tables
+================
+
+.. code-block:: python
+
+    >>> basecontent = Table('basecontent', meta,
+    ...     Column('id', Integer, primary_key=True),
+    ...     Column('title', String),
+    ...     Column('parent_id', ForeignKey('basecontent.id')),
+    ...     Column('publication_date', DateTime),
+    ... )
+    >>> page = Table('page', meta,
+    ...     Column('base_id', ForeignKey(basecontent.c.id)),
+    ...     Column('text', Text),
+    ... )
+
+示例：CMS Alias
+================
+
+.. class:: incremental
+.. class:: code-list
+
+* .. code-block:: python
+
+    >>> p1 = basecontent.alias()
+    >>> p2 = basecontent.alias()
+    >>> c = basecontent.alias()
+    >>> joins = page.join(c)\
+                .join(p1,c.c.parent_id==p1.c.id)\
+                .join(p2,p1.c.parent_id==p2.c.id)
+    >>> exp = select([page,c,p1,p2]).apply_labels()\
+               .select_from(joins)\
+               .where(p2.c.title=='实战策略')\
+               .order_by(c.c.publication_date.desc())
+    >>> for row in exp.execute():
+    ...     print row[c.c.title], row[p1.c.title], row[p2.c.title]
+
+* ::
+
+    test 每日策略 实战策略
+    test 每周策略 实战策略
+
+EXISTS
+======
+
+CORELATED SUBQUERY
+==================
+
+RETURNING
+=========
+
+SQLAlchemy ORM
+================
+
