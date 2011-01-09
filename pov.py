@@ -32,7 +32,6 @@ class File:
     def writeln(self,s=""):
         #print "    "*self.__indent+s
         self.file.write("    "*self.__indent+s+os.linesep)
-
 class Vector:
     def __init__(self,*args):
         if len(args) == 1:
@@ -40,13 +39,13 @@ class Vector:
         else:
             self.v = args
     def __str__(self):
-        return "<%s>"%(", ".join([str(x)for x in self.v]))
+        return "<%s>" % ", ".join(map(str, self.v))
     def __repr__(self):
         return "Vector(%s)"%self.v
     def __mul__(self,other):
         return Vector( [r*other for r in self.v] )
     def __rmul__(self,other):
-        return Vector( [r*other for r in self.v] )
+        return Vector( [other*r for r in self.v] )
 
 class Item(object):
     def __init__(self,name,args=[],opts=[],**kwargs):
@@ -105,24 +104,24 @@ def init_fn(name, nargs=0):
 
 g = globals()
 for name in [
-'texture',
-'pigment',
-'finish',
-'normal',
-'camera',
-'object',
-'background',
-('light_source', 1),
-('box', 2),
-('cylinder', 3),
-('plane', 2),
-('torus', 2),
-('cone', 4),
-('sphere', 2),
-'union',
-'intersection',
-'difference',
-'merge',
+    'texture',
+    'pigment',
+    'finish',
+    'normal',
+    'camera',
+    'object',
+    'background',
+    ('light_source', 1),
+    ('box', 2),
+    ('cylinder', 3),
+    ('plane', 2),
+    ('torus', 2),
+    ('cone', 4),
+    ('sphere', 2),
+    'union',
+    'intersection',
+    'difference',
+    'merge',
 ]:
     if isinstance(name, tuple):
         name, nargs = name
