@@ -1,0 +1,121 @@
+#
+# ini for git
+#
+
+[user]
+        #name = "Bart Trojanowski"
+        #email = "bart@jukie.net"
+        editor = vim
+        signingkey = 2289688F
+
+[core]
+        #whitespace = trailing-space,space-before-tab,indent-with-non-tab,cr-at-eol
+
+[color]
+        pager = true
+        ui = auto
+
+[merge]
+        tool = vimdiff
+
+[apply] 
+        #whitespace = strip
+
+[sendemail]
+        smtpserver = mail.jukie.net
+
+[alias]
+        rclone = clone --reference /git/cache.git/
+
+	last  = cat-file commit HEAD
+        cat   = -p cat-file -p
+
+        st    = "!f() { git ls-files --exclude-standard -t -u -s -m -d $@ | sed -e 's/C.*\t/C /' ; } ; f"
+        sto   = st -o
+
+        ds    = diff --stat
+        cds   = !git ds --cached
+
+        # format-patch is so damn long
+        fp    = format-patch
+
+        s     = "!git diff --name-status | sed -e 's/^/W /' ; git diff --cached --name-status | sed -e 's/^/C /'"
+
+        up    = !git remote update ; git gc
+
+        debug = !GIT_PAGER= gdb --args git
+
+        top = !eval cd "$(pwd)/$(git rev-parse --show-cdup)" && pwd
+
+        push-head = !git push origin `git symbolic-ref HEAD`
+        publish = push publish
+        pushall = !git remote | xargs -n1 git push
+        pushalltags = !git remote | xargs -n1 git push --tags
+
+        tblog = log --not-grep='Auto-increment of build number due to changes in directory '
+        tblg  = "!f() { git lg $@ | grep -v '^[^(]*Auto-increment of build number due to changes in directory ' | less ; } ; f"
+        tbk   = !gitk --not-grep='Auto-increment of build number due to changes in directory '
+
+	vgc = repack -f -a -d --depth=250 --window=250
+        nvgc = !ionice -n7 nice -n20 git vgc
+
+        svnup = !git config --get-regexp 'svn-remote.*url' | cut -d . -f 2 | xargs -n1 git svn fetch
+
+        #cvscommit = !git --git-dir=`cat CVS/GitDir` cvsexportcommit -c -p -v
+
+	log1 = log --pretty=oneline --abbrev-commit --decorate
+        lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+        lgn = "!f() { git log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --date=relative $@ | git name-rev --stdin --name-only ; } ; f"
+
+        findnext = rev-list --reverse -n1 HEAD..master
+        checkoutnext = !git checkout `git findnext`
+
+        # example: git subdo pull
+        subdo = submodule foreach git
+
+        case = !sh -c 'exec /home/oxygen/bart/work/git-case/git-case.git/git-case-$0 ${0+"$@"}'
+
+	edit-last-commit = !vim `git diff-tree -r --name-only HEAD HEAD~1`
+        edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+        add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+
+	file-blame = !git ls-files | xargs -n1 -i{} git log -1 --pretty=format:\"%ci {}\" -- {}
+	amend = commit --amend -C HEAD
+	tbrev = "!f() { git show \"$1\":include/dsa_version.h | awk '/define DSA_VERSION_STRING_A/ { print $3 }' ; } ; f"
+
+        #test = !sh -c 'echo cmd=$1 arg1=$2 arg2=$3'
+	#dirstatus = !ls -d1 */.git | xargs -n1 -i{} sh -c \"cd {}/.. && echo Checking {} && git ls-files --exclude-standard -tousmd\"
+
+
+[giggle]
+	compact-mode = false
+	main-window-maximized = false
+	main-window-geometry = 958x1139+960+36
+[pack]
+	threads = 4
+
+[push]
+	#default = tracking
+        default = matching
+
+[gc]
+        reflogexpire = 300
+        reflogexpireunreachable = 90
+
+[color "diff"]
+	frag = magenta reverse
+[git-p4]
+	user = bartt
+[diff]
+	tool = vimdiff
+	guitool = kdiff3
+[man]
+	viewer = man
+[help]
+	format = man
+[man "man"]
+	path = vman
+[url "git@github.com:bartman/"]
+	insteadOf = github:
+[url "bart@git.jukie.net:/home/git/"]
+	insteadOf = jukie:
